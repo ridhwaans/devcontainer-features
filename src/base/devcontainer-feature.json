@@ -1,0 +1,41 @@
+{
+    "name": "Base image",
+    "id": "base",
+    "version": "1.0.0",
+    "description": "A feature",
+    "options": {
+      "username": {
+        "type": "string",
+        "proposals": [
+            "ridhwaans",
+            "vscode",
+            "codespace",
+            "none"
+        ],
+        "default": "ridhwaans",
+        "description": "Enter name of a non-root user to configure or none to skip"
+      },
+      "setTheme": {
+        "type": "boolean",
+        "default": true,
+        "description": "Apply theme to vim and zsh"
+      }
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "dunstontc.viml",
+          "eamodio.gitlens",
+          "ms-azuretools.vscode-docker",
+          "ms-vscode-remote.remote-containers",
+          "ms-vscode-remote.remote-ssh",
+          "ms-vscode-remote.remote-wsl",
+          "ms-vsliveshare.vsliveshare",
+          "EditorConfig.EditorConfig",
+          "GraphQL.vscode-graphql",
+          "GraphQL.vscode-graphql-syntax",
+          "PKief.material-icon-theme"
+        ]
+      }
+    }
+}

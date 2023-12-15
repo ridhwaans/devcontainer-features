@@ -1,0 +1,8 @@
+{
+  "username-default": {
+    "image": "ubuntu",
+    "features": {
+        "common-utils": {}
+    }
+  }
+}

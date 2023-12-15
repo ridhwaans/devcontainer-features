@@ -1,13 +1,14 @@
 {
-    "color_and_hello": {
+    "all_the_clis": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
-            "color": {
-                "favorite": "purple"
-            },
-            "hello": {
-                "greeting": "Greetings"
-            }
+            "base": {}
         }
-    }
+    },
+    "language_versions": {
+      "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+      "features": {
+          "base": {}
+      }
+  }
 }
