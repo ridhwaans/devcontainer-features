@@ -1,3 +1,4 @@
+#!/bin/bash
 
 which_env() {
   if [ $(uname) = Darwin ]; then
@@ -16,12 +17,12 @@ which_env() {
 updaterc() {
   local rc_file="${1:-"~/.zshrc"}"
 
-    if [ "${UPDATE_RC}" = "true" ]; then
-        echo "Updating ${rc_file}..."
-        if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
-            echo -e "$1" >> ${rc_file}
-        fi
-    fi
+  if [ "${UPDATE_RC}" = "true" ]; then
+      echo "Updating ${rc_file}..."
+      if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
+          echo -e "$1" >> ${rc_file}
+      fi
+  fi
 }
 
 version_manager_exists(){
@@ -33,7 +34,7 @@ version_manager_exists(){
       return 0  # Return true (0)
   else
       return 1  # Return false (non-zero)
-  end
+  fi
 }
 
 plugin_manager_exists(){
@@ -41,9 +42,9 @@ plugin_manager_exists(){
 
   # Just install language version if version manager already installed
   if [ ! -d "${install_dir}" ]; then
-      echo "Version Manager already exists."
-      return 0  # Return true (0)
+    echo "Version Manager already exists."
+    return 0  # Return true (0)
   else
-      return 1  # Return false (non-zero)
-  end
+    return 1  # Return false (non-zero)
+  fi
 }

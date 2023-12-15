@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e
 
 if [ "$(id -u)" -ne 0 ]; then
