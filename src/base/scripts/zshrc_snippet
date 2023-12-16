@@ -1,10 +1,21 @@
-source $HOME/.zsh/bundle/bin/antigen.zsh
+# General
+ADOTDIR=/usr/local/share/.zsh/bundle
+ANTIGEN_LOG=${ADOTDIR}/antigen.log
+
+# Customization
+ANTIGEN_CACHE=${ADOTDIR}/init.zsh
+ANTIGEN_COMPDUMP=${ADOTDIR}/.zcompdump
+ANTIGEN_BUNDLES=${ADOTDIR}/bundles
+ANTIGEN_LOCK=${ADOTDIR}/.lock
+ANTIGEN_DEBUG_LOG=${ADOTDIR}/debug.log
+
+source ${ADOTDIR}/bin/antigen.zsh
 
 # Load the oh-my-zsh's library.
 antigen use oh-my-zsh
 
 # Load the theme.
-antigen theme robbyrussell
+antigen theme agnoster
 
 # Tell Antigen that you're done.
 antigen apply

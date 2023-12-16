@@ -36,15 +36,3 @@ version_manager_exists(){
       return 1  # Return false (non-zero)
   fi
 }
-
-plugin_manager_exists(){
-  local install_dir=$1
-
-  # Just install language version if version manager already installed
-  if [ ! -d "${install_dir}" ]; then
-    echo "Version Manager already exists."
-    return 0  # Return true (0)
-  else
-    return 1  # Return false (non-zero)
-  fi
-}

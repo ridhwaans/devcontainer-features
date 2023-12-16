@@ -8,6 +8,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 USERNAME="${USERNAME:-"automatic"}"
+USER_UID="${USERUID:-"automatic"}"
+USER_GID="${USERGID:-"automatic"}"
 SET_THEME="${SETTHEME:-"true"}"
 
 exec /bin/bash "$(dirname $0)/common-utils.sh" "$@"
