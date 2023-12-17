@@ -19,7 +19,7 @@ updaterc() {
 
   echo "Updating ${rc_file}..."
   if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
-      echo -e "$1" >> ${rc_file}
+      echo -e "$1" >> ${rc_file} > /dev/null 2>&1
   fi
 }
 

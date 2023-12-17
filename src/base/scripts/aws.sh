@@ -16,6 +16,14 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githu
 apt update 
 apt install -y --no-install-recommends gh
 
+# Install exercism-cli
+curl -L https://github.com/exercism/cli/releases/download/v3.1.0/exercism-3.1.0-linux-x86_64.tar.gz -o exercism-3.1.0-linux-x86_64.tar.gz
+tar -xf exercism-3.1.0-linux-x86_64.tar.gz
+mkdir -p $HOME/bin && mv exercism $_
+$HOME/bin/exercism
+rm -rf exercism-3.1.0-linux-x86_64.tar.gz
+
+
 # Install AWS
 if command -v aws &> /dev/null; then
   echo "aws is installed. Version: $(aws --version)"

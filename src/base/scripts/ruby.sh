@@ -7,9 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source ./helpers.sh
+source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
+UPDATE_RC="${UPDATE_RC:-"true"}"
 RUBY_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 RBENV_DIR="${RBENVINSTALLPATH:-"/usr/local/rbenv"}"
 
@@ -19,6 +20,15 @@ ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
+
+# Ensure apt is in non-interactive to avoid prompts
+export DEBIAN_FRONTEND=noninteractive
+
+# General requirements 
+# https://stackoverflow.com/a/9510209/3577482, https://github.com/rbenv/ruby-build/discussions/2118
+apt install -y --no-install-recommends ca-certificates software-properties-common build-essential gnupg2 libreadline-dev \
+                                    procps dirmngr gawk autoconf automake bison libffi-dev libgdbm-dev libncurses5-dev \
+                                    libsqlite3-dev libtool libyaml-dev pkg-config sqlite3 zlib1g-dev libgmp-dev libssl-dev
 
 # Create rbenv group to the user's UID or GID to change while still allowing access to rbenv
 if ! cat /etc/group | grep -e "^rbenv:" > /dev/null 2>&1; then
@@ -51,17 +61,16 @@ if [ ! -d "${RBENV_DIR}" ]; then
 
   git clone https://github.com/rbenv/ruby-build.git ${RBENV_DIR}/plugins/ruby-build
   git clone https://github.com/jf/rbenv-gemset.git ${RBENV_DIR}/plugins/rbenv-gemset
-
-  updaterc "${rbenv_rc_snippet}"
 else
     echo "rbenv already installed."
     
-    # install prereqs: https://stackoverflow.com/a/9510209/3577482, https://github.com/rbenv/ruby-build/discussions/2118
-    apt install -y --no-install-recommends libtool libyaml-dev
-    
     if [ "${RUBY_VERSION}" != "" ]; then
-        su ${USERNAME} -c "source /etc/zsh/zshrc && rbenv install ${RUBY_VERSION}"
+        su ${USERNAME} -c "export DEBIAN_FRONTEND=noninteractive; source /etc/zsh/zshrc && rbenv install ${RUBY_VERSION}"
     fi
+fi
+
+if [ "${UPDATE_RC}" = "true" ]; then
+    updaterc "${rbenv_rc_snippet}"
 fi
 
 # Additional ruby versions to be installed but not be set as default.
@@ -73,4 +82,4 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
             su ${USERNAME} -c "rbenv install ${version}"
         done
     IFS=$OLDIFS
-fi 
+fi

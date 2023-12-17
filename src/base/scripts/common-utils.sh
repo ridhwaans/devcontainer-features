@@ -7,19 +7,16 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
+source $(dirname $0)/helpers.sh
+
 USERNAME="${USERNAME:-"automatic"}"
 USER_UID="${USER_UID:-"automatic"}"
 USER_GID="${USER_GID:-"automatic"}"
+UPDATE_RC="${UPDATE_RC:-"true"}"
 SET_THEME="${SET_THEME:-"true"}"
 
-echo "Fetching the latest versions of the package list..."
-apt update -y
-
-echo "Installing updates for each outdated package and dependency..."
-apt upgrade -y --no-install-recommends
-
 # Ensure apt is in non-interactive to avoid prompts
-DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND=noninteractive
 
 packages=(
   ca-certificates
@@ -33,14 +30,18 @@ packages=(
   tig
   tree
   tzdata
+  unzip
   vim
   zip
   zsh
 )
-echo "Installing packages..."
+
+# Install the list of packages
+apt update -y
 apt install -y --no-install-recommends "${packages[@]}"
 
-echo "Removing packages that are no longer required..."
+# Get to latest versions of all packages
+apt upgrade -y --no-install-recommends
 apt autoremove -y
 
 # Fix character not in range error before shell change
@@ -55,7 +56,7 @@ if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
   USERNAME=""
   FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
   if id -u ${FIRST_USER} > /dev/null 2>&1; then
-    USERNAME=${FIRST_USER}\
+    USERNAME=${FIRST_USER}
   fi
   if [ "${USERNAME}" = "" ]; then
       USERNAME=vscode
@@ -130,7 +131,6 @@ chsh --shell /bin/zsh ${USERNAME}
 
 if [[ ! -d "/usr/local/share/.zsh/bundle" ]]; then
   git clone https://github.com/zsh-users/antigen.git /usr/local/share/.zsh/bundle
-  updaterc "${zsh_rc_snippet}"
   ln -s /usr/local/share/.zsh/bundle /etc/skel/.zsh
 fi
 
@@ -139,6 +139,9 @@ curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%2
 fc-cache -f -v
 fc-list | grep "Roboto Mono for Powerline.ttf"
 
+if [ "${UPDATE_RC}" = "true" ]; then
+  updaterc "${zsh_rc_snippet}"
+fi
 
 vim_rc_snippet=$(cat << 'EOF'
 set nocompatible              " be iMproved, required
@@ -181,8 +184,11 @@ EOF
 
 if [[ ! -d "/usr/local/share/.vim/bundle/Vundle.vim" ]]; then
   git clone https://github.com/VundleVim/Vundle.vim.git /usr/local/share/.vim/bundle/Vundle.vim
-  updaterc "/etc/vim/vimrc" "${vim_rc_snippet}"
   ln -s /usr/local/share/.vim/bundle/Vundle.vim /etc/skel/.vim
+fi
+
+if [ "${UPDATE_RC}" = "true" ]; then
+  updaterc "${vim_rc_snippet}" "/etc/vim/vimrc" 
 fi
 
 if [ "${SET_THEME}" = "true" ]; then
@@ -192,4 +198,3 @@ if [ "${SET_THEME}" = "true" ]; then
 fi
 
 vim +silent! +PluginInstall +qall
-source /etc/zsh/zshrc

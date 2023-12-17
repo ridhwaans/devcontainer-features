@@ -7,9 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source ./helpers.sh
+source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
+UPDATE_RC="${UPDATE_RC:-"true"}"
 NODE_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 NVM_DIR="${NVMINSTALLPATH:-"/usr/local/nvm"}"
 
@@ -51,13 +52,16 @@ if [ ! -d "${NVM_DIR}" ]; then
     chown "${USERNAME}:nvm" "${NVM_DIR}"
     chmod g+rws "${NVM_DIR}"
     source ${NVM_DIR}/nvm.sh
-    updaterc "${nvm_rc_snippet}"
 else
     echo "nvm already installed."
 
     if [ "${NODE_VERSION}" != "" ]; then
         su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm install '${NODE_VERSION}' && nvm alias default '${NODE_VERSION}'"
     fi
+fi
+
+if [ "${UPDATE_RC}" = "true" ]; then
+    updaterc "${nvm_rc_snippet}"
 fi
 
 # Additional node versions to be installed but not be set as default.

@@ -7,9 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source ./helpers.sh
+source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
+UPDATE_RC="${UPDATE_RC:-"true"}"
 PYTHON_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 PYENV_DIR="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
 
@@ -19,6 +20,13 @@ ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
+
+# Ensure apt is in non-interactive to avoid prompts
+export DEBIAN_FRONTEND=noninteractive
+
+# General requirements 
+# https://stackoverflow.com/a/71347968/3577482, liblzma-dev
+apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev
 
 # Create pyenv group to the user's UID or GID to change while still allowing access to pyenv
 if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
@@ -50,17 +58,16 @@ if [ ! -d "${PYENV_DIR}" ]; then
   chmod g+rws "${PYENV_DIR}" 
 
   git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_DIR}/plugins/pyenv-virtualenv
-
-  updaterc "${pyenv_rc_snippet}"
 else
     echo "pyenv already installed."
-
-    # install prereqs: https://stackoverflow.com/a/71347968/3577482, liblzma-dev
-    apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev
 
     if [ "${PYTHON_VERSION}" != "" ]; then
         su ${USERNAME} -c "source /etc/zsh/zshrc && pyenv install ${PYTHON_VERSION}"
     fi
+fi
+
+if [ "${UPDATE_RC}" = "true" ]; then
+    updaterc "${pyenv_rc_snippet}"
 fi
 
 # Additional python versions to be installed but not be set as default.
