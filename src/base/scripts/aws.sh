@@ -17,12 +17,9 @@ apt update
 apt install -y --no-install-recommends gh
 
 # Install exercism-cli
-curl -L https://github.com/exercism/cli/releases/download/v3.1.0/exercism-3.1.0-linux-x86_64.tar.gz -o exercism-3.1.0-linux-x86_64.tar.gz
-tar -xf exercism-3.1.0-linux-x86_64.tar.gz
-mkdir -p $HOME/bin && mv exercism $_
-$HOME/bin/exercism
-rm -rf exercism-3.1.0-linux-x86_64.tar.gz
-
+curl -L https://github.com/exercism/cli/releases/download/v3.1.0/exercism-3.1.0-linux-x86_64.tar.gz --create-dirs -o /tmp/exercism-3.1.0-linux-x86_64.tar.gz
+tar -xzvf /tmp/exercism-3.1.0-linux-x86_64.tar.gz exercism -C /usr/local/bin
+rm -rf /tmp/exercism-3.1.0-linux-x86_64.tar.gz
 
 # Install AWS
 if command -v aws &> /dev/null; then
