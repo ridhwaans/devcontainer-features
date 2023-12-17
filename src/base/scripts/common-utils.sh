@@ -11,7 +11,6 @@ USERNAME="${USERNAME:-"automatic"}"
 USER_UID="${USER_UID:-"automatic"}"
 USER_GID="${USER_GID:-"automatic"}"
 SET_THEME="${SET_THEME:-"true"}"
-FEATURE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "Fetching the latest versions of the package list..."
 apt update -y
@@ -56,8 +55,7 @@ if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
   USERNAME=""
   FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
   if id -u ${FIRST_USER} > /dev/null 2>&1; then
-      USERNAME=${FIRST_USER}
-      break
+    USERNAME=${FIRST_USER}\
   fi
   if [ "${USERNAME}" = "" ]; then
       USERNAME=vscode
@@ -102,12 +100,37 @@ if [ "${USERNAME}" != "root" ]; then
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
 
+zsh_rc_snippet=$(cat << 'EOF'
+# General
+ADOTDIR=/usr/local/share/.zsh/bundle
+ANTIGEN_LOG=${ADOTDIR}/antigen.log
+
+# Customization
+ANTIGEN_CACHE=${ADOTDIR}/init.zsh
+ANTIGEN_COMPDUMP=${ADOTDIR}/.zcompdump
+ANTIGEN_BUNDLES=${ADOTDIR}/bundles
+ANTIGEN_LOCK=${ADOTDIR}/.lock
+ANTIGEN_DEBUG_LOG=${ADOTDIR}/debug.log
+
+source ${ADOTDIR}/bin/antigen.zsh
+
+# Load the oh-my-zsh's library.
+antigen use oh-my-zsh
+
+# Load the theme.
+antigen theme agnoster
+
+# Tell Antigen that you're done.
+antigen apply
+EOF
+)
+
 echo "Set default shell..."
 chsh --shell /bin/zsh ${USERNAME}
 
 if [[ ! -d "/usr/local/share/.zsh/bundle" ]]; then
   git clone https://github.com/zsh-users/antigen.git /usr/local/share/.zsh/bundle
-  cat "${FEATURE_DIR}/scripts/zshrc_snippet" >> /etc/zsh/zshrc
+  updaterc "${zsh_rc_snippet}"
   ln -s /usr/local/share/.zsh/bundle /etc/skel/.zsh
 fi
 
@@ -116,21 +139,57 @@ curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%2
 fc-cache -f -v
 fc-list | grep "Roboto Mono for Powerline.ttf"
 
+
+vim_rc_snippet=$(cat << 'EOF'
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=/usr/local/share/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+Plugin 'whatyouhide/vim-gotham'
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+try
+  colorscheme gotham256
+catch /^Vim\%((\a\+)\)\=:E185/
+endtry
+EOF
+)
+
 if [[ ! -d "/usr/local/share/.vim/bundle/Vundle.vim" ]]; then
   git clone https://github.com/VundleVim/Vundle.vim.git /usr/local/share/.vim/bundle/Vundle.vim
-  cat "${FEATURE_DIR}/scripts/vimrc_snippet" >> /etc/vim/vimrc
+  updaterc "/etc/vim/vimrc" "${vim_rc_snippet}"
   ln -s /usr/local/share/.vim/bundle/Vundle.vim /etc/skel/.vim
 fi
 
 if [ "${SET_THEME}" = "true" ]; then
   sed -i '/^antigen theme/s/.*/antigen theme agnoster/' /etc/zsh/zshrc
   sed -i '/^colorscheme/s/.*/colorscheme gotham256/' /etc/vim/vimrc
+  # alireza94.theme-gotham
 fi
 
 vim +silent! +PluginInstall +qall
 source /etc/zsh/zshrc
-# alireza94.theme-gotham
-
-
-
-

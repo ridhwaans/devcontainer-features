@@ -1,7 +1,7 @@
 FROM ubuntu
 
 RUN mkdir -p /usr/local/bin/bootstrap
-COPY install.sh common-utils.sh main.sh /usr/local/bin/bootstrap
+COPY install.sh /usr/local/bin/bootstrap
 COPY scripts/ /usr/local/bin/bootstrap/scripts/
 
 # dockerfile fix tzdata getting stuck during build image

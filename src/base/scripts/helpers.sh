@@ -15,24 +15,29 @@ which_env() {
 }
 
 updaterc() {
-  local rc_file="${1:-"~/.zshrc"}"
+  local rc_file="${2:-"/etc/zsh/zshrc"}"
 
-  if [ "${UPDATE_RC}" = "true" ]; then
-      echo "Updating ${rc_file}..."
-      if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
-          echo -e "$1" >> ${rc_file}
-      fi
+  echo "Updating ${rc_file}..."
+  if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
+      echo -e "$1" >> ${rc_file}
   fi
 }
 
-version_manager_exists(){
-  local version_manager=$1
+get_non_root_user() {
+  local USERNAME
 
-  # Just install language version if version manager already installed
-  if version_manager --version > /dev/null; then
-      echo "Version Manager already exists."
-      return 0  # Return true (0)
+  if [ "${1}" = "auto" ] || [ "${1}" = "automatic" ]; then
+    USERNAME=""
+    FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
+    if id -u ${FIRST_USER} > /dev/null 2>&1; then
+      USERNAME=${FIRST_USER}
+    fi
+    [ "${USERNAME}" = "" ] && USERNAME="root"
+  elif [ "${1}" = "none" ] || ! id -u "${1}" > /dev/null 2>&1; then
+    USERNAME="root"
   else
-      return 1  # Return false (non-zero)
+    USERNAME="${1}"
   fi
+
+  echo "${USERNAME}"
 }

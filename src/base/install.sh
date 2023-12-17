@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -12,6 +12,19 @@ USER_UID="${USERUID:-"automatic"}"
 USER_GID="${USERGID:-"automatic"}"
 SET_THEME="${SETTHEME:-"true"}"
 
-exec /bin/bash "$(dirname $0)/common-utils.sh" "$@"
-#exec /bin/bash "$(dirname $0)/main.sh" "$@"
+scripts=(
+  common-utils.sh
+  node.sh
+  java.sh
+  ruby.sh
+  python.sh
+  go.sh
+  tools.sh
+)
+
+for script in "${scripts[@]}"; do
+  exec /bin/bash "$(dirname "$0")/scripts/$script" "$@"
+done
+
+# Exit with the exit code of the last executed script
 exit $?
