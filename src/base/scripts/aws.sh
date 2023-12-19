@@ -22,9 +22,12 @@ apt update
 apt install -y --no-install-recommends gh
 
 # Install exercism-cli
-curl -L https://github.com/exercism/cli/releases/download/v3.1.0/exercism-3.1.0-linux-x86_64.tar.gz --create-dirs -o /tmp/exercism-3.1.0-linux-x86_64.tar.gz
-tar -xzvf /tmp/exercism-3.1.0-linux-x86_64.tar.gz exercism -C /usr/local/bin
-rm -rf /tmp/exercism-3.1.0-linux-x86_64.tar.gz
+EXERCISM_VERSION="${VERSION:-"latest"}"
+find_version_from_git_tags EXERCISM_VERSION https://github.com/exercism/cli
+exercism_filename="exercism-${EXERCISM_VERSION}-linux-x86_64.tar.gz"
+curl -L https://github.com/exercism/cli/releases/download/v${EXERCISM_VERSION}/${exercism_filename} --create-dirs -o /tmp/${exercism_filename}
+tar -xzvf /tmp/${exercism_filename} -C /usr/local/bin exercism
+rm -rf /tmp/${exercism_filename}
 
 # Install AWS
 if command -v aws &> /dev/null; then
@@ -44,13 +47,18 @@ else
 	rm -rf aws-sam-cli-linux-x86_64.zip
 fi
 
-echo $(whoami)
-echo ${USERNAME}
-su -l ${USERNAME} -s /bin/zsh -c "source /etc/zsh/zshrc && pip install cfn-lint"
+# Install cfn-lint
+#su ${USERNAME} -c "source /etc/zsh/zshrc && pip install cfn-lint"
 
 # Install terraform
 TERRAFORM_VERSION="${VERSION:-"latest"}"
 # Verify requested version is available, convert latest
 find_version_from_git_tags TERRAFORM_VERSION 'https://github.com/hashicorp/terraform'
 
+terraform_filename="terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+curl -sSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/${terraform_filename}" -o /tmp/${terraform_filename} && cd $(dirname $_)
+unzip ${terraform_filename}
+mv -f terraform /usr/local/bin/
+rm -rf ${terraform_filename}
 
+echo "Done!"

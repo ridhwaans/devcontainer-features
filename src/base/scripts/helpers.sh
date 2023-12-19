@@ -60,7 +60,7 @@ get_non_root_user() {
 }
 
 # Figure out correct version of a three part version number is not passed
-# Need to run via /bin/bash, since ./ and /bin/zsh do not support indirect variable reference and extended pattern substitution syntax (//).
+# Requires /bin/bash to run; ./ and /bin/zsh do not support indirect variable reference and extended pattern substitution syntax (//).
 find_version_from_git_tags() {
     local variable_name=$1
     local requested_version=${!variable_name}

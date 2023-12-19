@@ -27,7 +27,8 @@ export DEBIAN_FRONTEND=noninteractive
 # General requirements 
 # https://stackoverflow.com/a/71347968/3577482
 # https://stackoverflow.com/questions/50757647/e-gnupg-gnupg2-and-gnupg1-do-not-seem-to-be-installed-but-one-of-them-is-requ
-apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev gnupg
+# https://github.com/pyenv/pyenv/issues/677
+apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev gnupg patch
 
 # Create pyenv group to the user's UID or GID to change while still allowing access to pyenv
 if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
@@ -78,3 +79,5 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
         done
     IFS=$OLDIFS
 fi
+
+echo "Done!"

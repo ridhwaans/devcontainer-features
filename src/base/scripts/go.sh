@@ -10,22 +10,49 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
+UPDATE_RC="${UPDATE_RC:-"true"}"
 GO_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
+GO_DIR="${GOINSTALLPATH:-"/usr/local/go"}"
+GO_PATH="${GOPATH:-"/go"}"
 
 # Verify requested version is available, convert latest
-find_version_from_git_tags GO_VERSION 'https://github.com/golang/go'
-
-# Comma-separated list of python versions to be installed
-# alongside GO_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
+find_version_from_git_tags GO_VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 
-if [[ "$(go version)" = *"${GO_VERSION}"* ]]; then
-  echo "(!) Go is already installed with version ${GO_VERSION}. Skipping..."
-elif [ "${GO_VERSION}" != "none" ]; then
-  echo "Installing specified Go version."
-  find_version_from_git_tags GO_VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
-  su ${USERNAME} -c "apt install -y --no-install-recommends ${GO_VERSION}"
+# Create golang group to the user's UID or GID to change while still allowing access to nvm
+if ! cat /etc/group | grep -e "^golang:" > /dev/null 2>&1; then
+    groupadd -r golang
 fi
+usermod -a -G golang ${USERNAME}
+mkdir -p "${GO_DIR}" "${GO_PATH}"
+
+if [[ "${GO_VERSION}" != "none" ]] && [[ "$(go version 2>/dev/null)" != *"${GO_VERSION}"* ]]; then
+  echo "Downloading Go ${GO_VERSION}..."
+    set +e
+     curl -fsSL -o /tmp/go.tar.gz "https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
+     tar -xzf /tmp/go.tar.gz -C "${GO_DIR}" --strip-components=1
+     rm -rf /tmp/go.tar.gz
+else
+    echo "(!) Go is already installed with version ${GO_VERSION}. Skipping."
+fi
+
+chown -R "root:golang" "${GO_DIR}" "${GO_PATH}"
+chmod -R g+rws "${GO_DIR}" "${GO_PATH}"
+
+export PATH=$PATH:/usr/local/go/bin
+
+go_rc_snippet=$(cat << 'EOF'
+
+export PATH=/usr/local/go/bin:$PATH
+
+export GOPATH=/go
+EOF
+)
+
+if [ "${UPDATE_RC}" = "true" ]; then
+    updaterc "${go_rc_snippet}"
+fi
+
+echo "Done!"

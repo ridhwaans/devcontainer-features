@@ -20,7 +20,6 @@ EOF
 )
 
     echo "Building Docker image..."
-
     #echo "$DOCKERFILE_CONTENT" | docker build --no-cache -t $IMAGE_NAME -
     docker build --no-cache -t "$IMAGE_NAME" . > build_log.txt 2>&1
 

@@ -109,3 +109,5 @@ fi
 if [[ "${INSTALL_MAVEN}" = "true" ]] && ! mvn --version > /dev/null; then
     sdk_install maven ${MAVEN_VERSION}
 fi
+
+echo "Done!"

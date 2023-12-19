@@ -85,3 +85,5 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
         done
     IFS=$OLDIFS
 fi
+
+echo "Done!"
