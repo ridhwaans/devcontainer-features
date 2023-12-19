@@ -25,8 +25,9 @@ USERNAME=$(get_non_root_user $USERNAME)
 export DEBIAN_FRONTEND=noninteractive
 
 # General requirements 
-# https://stackoverflow.com/a/71347968/3577482, liblzma-dev
-apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev
+# https://stackoverflow.com/a/71347968/3577482
+# https://stackoverflow.com/questions/50757647/e-gnupg-gnupg2-and-gnupg1-do-not-seem-to-be-installed-but-one-of-them-is-requ
+apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev gnupg
 
 # Create pyenv group to the user's UID or GID to change while still allowing access to pyenv
 if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
@@ -34,18 +35,13 @@ if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
 fi
 usermod -a -G pyenv ${USERNAME}
 
-# Adjust python version if required
-if [ "${PYTHON_VERSION}" = "none" ]; then
-    PYTHON_VERSION=
-elif [ "${PYTHON_VERSION}" = "latest" ]; then
-    PYTHON_VERSION="3.12:latest"
-fi
-
 pyenv_rc_snippet=$(cat << 'EOF'
 
 export PYENV_ROOT="/usr/local/pyenv"
 
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+
+eval "$(pyenv init -)"
 
 eval "$(pyenv virtualenv-init -)"
 EOF
@@ -54,20 +50,22 @@ EOF
 umask 0002
 if [ ! -d "${PYENV_DIR}" ]; then
   git clone https://github.com/pyenv/pyenv.git ${PYENV_DIR}
-  chown "${USERNAME}:pyenv" ${PYENV_DIR}
-  chmod g+rws "${PYENV_DIR}" 
+  chown -R "root:pyenv" ${PYENV_DIR}
+  chmod -R g+rws "${PYENV_DIR}" 
 
   git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_DIR}/plugins/pyenv-virtualenv
 else
     echo "pyenv already installed."
-
-    if [ "${PYTHON_VERSION}" != "" ]; then
-        su ${USERNAME} -c "source /etc/zsh/zshrc && pyenv install ${PYTHON_VERSION}"
-    fi
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "${pyenv_rc_snippet}"
+fi
+
+if [ "${PYTHON_VERSION}" != "" ]; then
+     # Find version using soft match
+    find_version_from_git_tags PYTHON_VERSION "https://github.com/python/cpython"
+    su ${USERNAME} -c "export PATH=$PYENV_DIR/bin:\$PATH; pyenv install ${PYTHON_VERSION} && pyenv global ${PYTHON_VERSION}"
 fi
 
 # Additional python versions to be installed but not be set as default.
@@ -76,7 +74,7 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=","
         read -a additional_versions <<< "$ADDITIONAL_VERSIONS"
         for version in "${additional_versions[@]}"; do
-            su ${USERNAME} -c "pyenv install ${version}"
+            su ${USERNAME} -c "export PATH=$PYENV_DIR/bin:\$PATH; pyenv install ${version}"
         done
     IFS=$OLDIFS
 fi

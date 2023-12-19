@@ -7,7 +7,12 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
+source $(dirname $0)/helpers.sh
+
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
+
+# Determine the appropriate non-root user
+USERNAME=$(get_non_root_user $USERNAME)
 
 # Install gh-cli
 curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -39,13 +44,13 @@ else
 	rm -rf aws-sam-cli-linux-x86_64.zip
 fi
 
-# Install cfn-lint
-pip install cfn-lint
+echo $(whoami)
+echo ${USERNAME}
+su -l ${USERNAME} -s /bin/zsh -c "source /etc/zsh/zshrc && pip install cfn-lint"
 
 # Install terraform
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-apt update
-apt install -y --no-install-recommends terraform
+TERRAFORM_VERSION="${VERSION:-"latest"}"
+# Verify requested version is available, convert latest
+find_version_from_git_tags TERRAFORM_VERSION 'https://github.com/hashicorp/terraform'
 
 

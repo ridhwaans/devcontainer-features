@@ -14,31 +14,25 @@ SET_THEME="${SETTHEME:-"true"}"
 
 scripts=(
   common-utils.sh
-  node.sh
   java.sh
-  ruby.sh
   python.sh
+  ruby.sh
+  node.sh
   go.sh
   aws.sh
 )
 script_dir="$(dirname "$0")/scripts"
 
-# Run the first script in a Bash shell
-/bin/bash "$script_dir/${scripts[0]}" "$@"
+for script in "${scripts[@]}"; do
+    /bin/bash "$script_dir/$script" "$@"
 
-# Now, the remaining scripts will run in the new Zsh shell
-for script in "${scripts[@]:1}"; do
-    # Run the script
-    /bin/zsh "$script_dir/$script" "$@"
-
-    # Check the exit status of the last command (the script)
     script_status=$?
 
     if [ $script_status -eq 0 ]; then
         echo "Script '$script' executed successfully."
     else
         echo "Error: Script '$script' failed to execute with status $script_status."
-        exit 1  # Exit the entire script if any script fails
+        exit 1
     fi
 done
 

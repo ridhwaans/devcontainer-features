@@ -56,21 +56,23 @@ EOF
 umask 0002
 if [ ! -d "${RBENV_DIR}" ]; then
   git clone https://github.com/rbenv/rbenv.git ${RBENV_DIR}
-  chown "${USERNAME}:rbenv" ${RBENV_DIR}
-  chmod g+rws "${RBENV_DIR}" 
+  chown -R "root:rbenv" ${RBENV_DIR}
+  chmod -R g+rws "${RBENV_DIR}" 
 
   git clone https://github.com/rbenv/ruby-build.git ${RBENV_DIR}/plugins/ruby-build
-  git clone https://github.com/jf/rbenv-gemset.git ${RBENV_DIR}/plugins/rbenv-gemset
+  git clone https://github.com/jf/rbenv-gemset.git ${RBENV_DIR}/plugins/ruby-gemset
 else
     echo "rbenv already installed."
-    
-    if [ "${RUBY_VERSION}" != "" ]; then
-        su ${USERNAME} -c "export DEBIAN_FRONTEND=noninteractive; source /etc/zsh/zshrc && rbenv install ${RUBY_VERSION}"
-    fi
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "${rbenv_rc_snippet}"
+fi
+
+if [ "${RUBY_VERSION}" != "" ]; then
+    # Find version using soft match
+    find_version_from_git_tags RUBY_VERSION "https://github.com/ruby/ruby" "tags/v" "_"
+    su ${USERNAME} -c "export RBENV_ROOT=${RBENV_DIR}; export PATH=$RBENV_DIR/bin:\$PATH; rbenv install ${RUBY_VERSION}"
 fi
 
 # Additional ruby versions to be installed but not be set as default.
@@ -79,7 +81,7 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=","
         read -a additional_versions <<< "$ADDITIONAL_VERSIONS"
         for version in "${additional_versions[@]}"; do
-            su ${USERNAME} -c "rbenv install ${version}"
+            su ${USERNAME} -c "export PATH=$RBENV_DIR/bin:\$PATH; rbenv install ${version}"
         done
     IFS=$OLDIFS
 fi

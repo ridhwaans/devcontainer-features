@@ -15,12 +15,29 @@ which_env() {
 }
 
 updaterc() {
-  local rc_file="${2:-"/etc/zsh/zshrc"}"
+  local text_to_add="$1"
+  local rc_file="$2"
+  
+  update_file() {
+    local file_path="$1"
+    if [ -f $file_path ] && [[ "$(cat $file_path)" != *"$text_to_add"* ]]; then
+      echo "Updating $file_path..."
+      echo -e "$text_to_add" >> "$file_path"
+    fi
+  }
 
-  echo "Updating ${rc_file}..."
-  if [ -f "${rc_file}" ] && [[ "$(cat ${rc_file})" != *"$1"* ]]; then
-      echo -e "$1" >> ${rc_file} > /dev/null 2>&1
-  fi
+  case "$rc_file" in
+    zsh)
+      update_file "/etc/zsh/zshrc"
+      ;;
+    vim)
+      update_file "/etc/vim/vimrc"
+      ;;
+    *)
+      update_file "/etc/bash.bashrc"
+      update_file "/etc/zsh/zshrc"
+      ;;
+  esac
 }
 
 get_non_root_user() {
@@ -40,4 +57,39 @@ get_non_root_user() {
   fi
 
   echo "${USERNAME}"
+}
+
+# Figure out correct version of a three part version number is not passed
+# Need to run via /bin/bash, since ./ and /bin/zsh do not support indirect variable reference and extended pattern substitution syntax (//).
+find_version_from_git_tags() {
+    local variable_name=$1
+    local requested_version=${!variable_name}
+    if [ "${requested_version}" = "none" ]; then return; fi
+    local repository=$2
+    local prefix=${3:-"tags/v"}
+    local separator=${4:-"."}
+    local last_part_optional=${5:-"false"}    
+    if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
+        local escaped_separator=${separator//./\\.}
+        local last_part
+        if [ "${last_part_optional}" = "true" ]; then
+            last_part="(${escaped_separator}[0-9]+)?"
+        else
+            last_part="${escaped_separator}[0-9]+"
+        fi
+        local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
+        local version_list="$(git ls-remote --tags ${repository} | grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
+        if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
+            declare -g ${variable_name}="$(echo "${version_list}" | head -n 1)"
+        else
+            set +e
+            declare -g ${variable_name}="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            set -e
+        fi
+    fi
+    if [ -z "${!variable_name}" ] || ! echo "${version_list}" | grep "^${!variable_name//./\\.}$" > /dev/null 2>&1; then
+        echo -e "Invalid ${variable_name} value: ${requested_version}\nValid values:\n${version_list}" >&2
+        exit 1
+    fi
+    echo "${variable_name}=${!variable_name}"
 }

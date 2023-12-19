@@ -25,12 +25,6 @@ ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 
-# Create sdkman group to the user's UID or GID to change while still allowing access to sdkman
-if ! cat /etc/group | grep -e "^sdkman:" > /dev/null 2>&1; then
-    groupadd -r sdkman
-fi
-usermod -a -G sdkman ${USERNAME}
-
 # Use SDKMAN to install something using a partial version match
 sdk_install() {
     local install_type=$1
@@ -75,20 +69,25 @@ export SDKMAN_DIR="/usr/local/sdkman"
 EOF
 )
 
-umask 0002
+# Install sdkman if not installed
 if [ ! -d "${SDKMAN_DIR}" ]; then
-  export SDKMAN_DIR && curl -s "https://get.sdkman.io" | bash
-  chown "${USERNAME}:sdkman" ${SDKMAN_DIR}
-  chmod g+rws "${SDKMAN_DIR}" 
-else
-    echo "sdkman already installed."
+    # Create sdkman group, dir, and set sticky bit
+    if ! cat /etc/group | grep -e "^sdkman:" > /dev/null 2>&1; then
+        groupadd -r sdkman
+    fi
+    usermod -a -G sdkman ${USERNAME}
+    umask 0002
+    # Install SDKMAN
+    curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
+    chown -R "root:sdkman" ${SDKMAN_DIR}
+    chmod -R g+rws "${SDKMAN_DIR}"
 fi
-
-sdk_install java ${JAVA_VERSION} "\\s*" "(\\.[a-z0-9]+)*-${JDK_DISTRO}\\s*" ".*-[a-z]+$" "true"
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "${sdkman_rc_snippet}"
 fi
+
+sdk_install java ${JAVA_VERSION} "\\s*" "(\\.[a-z0-9]+)*-${JDK_DISTRO}\\s*" ".*-[a-z]+$" "true"
 
 # Additional Java versions to be installed but not be set as default.
 if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then

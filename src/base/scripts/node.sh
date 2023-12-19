@@ -47,19 +47,19 @@ EOF
 umask 0002
 if [ ! -d "${NVM_DIR}" ]; then
     git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
-    chown "${USERNAME}:nvm" "${NVM_DIR}"
-    chmod g+rws "${NVM_DIR}"
+    chown -R "root:nvm" "${NVM_DIR}"
+    chmod -R g+rws "${NVM_DIR}"
     source ${NVM_DIR}/nvm.sh
 else
     echo "nvm already installed."
-
-    if [ "${NODE_VERSION}" != "" ]; then
-        su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm install '${NODE_VERSION}' && nvm alias default '${NODE_VERSION}'"
-    fi
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "${nvm_rc_snippet}"
+fi
+
+if [ "${NODE_VERSION}" != "" ]; then
+    su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm install '${NODE_VERSION}' && nvm alias default '${NODE_VERSION}'"
 fi
 
 # Additional node versions to be installed but not be set as default.

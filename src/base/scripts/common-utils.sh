@@ -14,6 +14,8 @@ USER_UID="${USER_UID:-"automatic"}"
 USER_GID="${USER_GID:-"automatic"}"
 UPDATE_RC="${UPDATE_RC:-"true"}"
 SET_THEME="${SET_THEME:-"true"}"
+VUNDLE_DIR="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle/Vundle.vim"}"
+ANTIGEN_DIR="${ANTIGENINSTALLPATH:-"/usr/local/share/.zsh/bundle"}"
 
 # Ensure apt is in non-interactive to avoid prompts
 export DEBIAN_FRONTEND=noninteractive
@@ -101,6 +103,10 @@ if [ "${USERNAME}" != "root" ]; then
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
 
+echo "Set default shell..."
+chsh --shell /bin/zsh ${USERNAME}
+
+
 zsh_rc_snippet=$(cat << 'EOF'
 # General
 ADOTDIR=/usr/local/share/.zsh/bundle
@@ -126,11 +132,16 @@ antigen apply
 EOF
 )
 
-echo "Set default shell..."
-chsh --shell /bin/zsh ${USERNAME}
-
 if [[ ! -d "/usr/local/share/.zsh/bundle" ]]; then
-  git clone https://github.com/zsh-users/antigen.git /usr/local/share/.zsh/bundle
+  # Create antigen group
+  if ! cat /etc/group | grep -e "^antigen:" > /dev/null 2>&1; then
+      groupadd -r antigen
+  fi
+  usermod -a -G antigen ${USERNAME}
+
+  git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
+  chown -R "root:antigen" "${ANTIGEN_DIR}"
+  chmod -R g+rws "${ANTIGEN_DIR}"
   ln -s /usr/local/share/.zsh/bundle /etc/skel/.zsh
 fi
 
@@ -140,7 +151,7 @@ fc-cache -f -v
 fc-list | grep "Roboto Mono for Powerline.ttf"
 
 if [ "${UPDATE_RC}" = "true" ]; then
-  updaterc "${zsh_rc_snippet}"
+  updaterc "${zsh_rc_snippet}" "zsh"
 fi
 
 vim_rc_snippet=$(cat << 'EOF'
@@ -149,7 +160,7 @@ filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=/usr/local/share/.vim/bundle/Vundle.vim
-call vundle#begin()
+call vundle#begin('/usr/local/share/.vim/bundle')
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
@@ -178,17 +189,27 @@ filetype plugin indent on    " required
 try
   colorscheme gotham256
 catch /^Vim\%((\a\+)\)\=:E185/
+  colorscheme default
+  set background=dark
 endtry
 EOF
 )
 
 if [[ ! -d "/usr/local/share/.vim/bundle/Vundle.vim" ]]; then
-  git clone https://github.com/VundleVim/Vundle.vim.git /usr/local/share/.vim/bundle/Vundle.vim
+  # Create vundle group
+  if ! cat /etc/group | grep -e "^vundle:" > /dev/null 2>&1; then
+      groupadd -r vundle
+  fi
+  usermod -a -G vundle ${USERNAME}
+
+  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}
+  chown -R "root:vundle" "${VUNDLE_DIR}"
+  chmod -R g+rws "${VUNDLE_DIR}"
   ln -s /usr/local/share/.vim/bundle/Vundle.vim /etc/skel/.vim
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
-  updaterc "${vim_rc_snippet}" "/etc/vim/vimrc" 
+  updaterc "${vim_rc_snippet}" "vim"
 fi
 
 if [ "${SET_THEME}" = "true" ]; then
@@ -197,4 +218,4 @@ if [ "${SET_THEME}" = "true" ]; then
   # alireza94.theme-gotham
 fi
 
-vim +silent! +PluginInstall +qall
+#vim +silent! +PluginInstall +qall
