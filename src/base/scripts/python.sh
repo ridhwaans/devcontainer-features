@@ -12,7 +12,7 @@ source $(dirname $0)/helpers.sh
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATE_RC:-"true"}"
 PYTHON_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-PYENV_DIR="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
+export PYENV_ROOT="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
 
 # Comma-separated list of python versions to be installed
 # alongside PYTHON_VERSION, but not set as default.
@@ -49,12 +49,12 @@ EOF
 )
 
 umask 0002
-if [ ! -d "${PYENV_DIR}" ]; then
-  git clone https://github.com/pyenv/pyenv.git ${PYENV_DIR}
-  chown -R "root:pyenv" ${PYENV_DIR}
-  chmod -R g+rws "${PYENV_DIR}" 
+if [ ! -d "${PYENV_ROOT}" ]; then
+  git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
+  chown -R "root:pyenv" ${PYENV_ROOT}
+  chmod -R g+rws "${PYENV_ROOT}" 
 
-  git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_DIR}/plugins/pyenv-virtualenv
+  git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 else
     echo "pyenv already installed."
 fi
@@ -66,7 +66,7 @@ fi
 if [ "${PYTHON_VERSION}" != "" ]; then
      # Find version using soft match
     find_version_from_git_tags PYTHON_VERSION "https://github.com/python/cpython"
-    su ${USERNAME} -c "export PATH=$PYENV_DIR/bin:\$PATH; pyenv install ${PYTHON_VERSION} && pyenv global ${PYTHON_VERSION}"
+    su ${USERNAME} -c "export PYENV_ROOT=${PYENV_ROOT}; export PATH=$PYENV_ROOT/bin:\$PATH; pyenv install ${PYTHON_VERSION} && pyenv global ${PYTHON_VERSION}"
 fi
 
 # Additional python versions to be installed but not be set as default.
@@ -75,7 +75,7 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=","
         read -a additional_versions <<< "$ADDITIONAL_VERSIONS"
         for version in "${additional_versions[@]}"; do
-            su ${USERNAME} -c "export PATH=$PYENV_DIR/bin:\$PATH; pyenv install ${version}"
+            su ${USERNAME} -c "export PYENV_ROOT=${PYENV_ROOT}; export PATH=$PYENV_ROOT/bin:\$PATH; pyenv install ${version}"
         done
     IFS=$OLDIFS
 fi

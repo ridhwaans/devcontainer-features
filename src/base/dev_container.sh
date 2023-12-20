@@ -19,12 +19,29 @@ WORKDIR $CONTAINER_DIR
 EOF
 )
 
-    echo "Building Docker image..."
-    #echo "$DOCKERFILE_CONTENT" | docker build --no-cache -t $IMAGE_NAME -
-    docker build --no-cache -t "$IMAGE_NAME" . > build_log.txt 2>&1
+    # Check if the container is already running
+    if [ "$(docker inspect -f '{{.State.Running}}' $CONTAINER_NAME 2>/dev/null)" = "true" ]; then
+        echo "Container $CONTAINER_NAME is already running."
+    else
+        # Check if the container exists but is stopped
+        if [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER_NAME 2>/dev/null)" = "exited" ]; then
+            # Start the existing stopped container
+            docker start -i $CONTAINER_NAME
+        else
+            echo "Building Docker image..."
+            # Check if Dockerfile exists in the current directory
+            if [ -f Dockerfile ]; then
+                # Use the local Dockerfile
+                docker build --no-cache -t "$IMAGE_NAME" . > build_log.txt 2>&1
+            else
+                # Use the inline Dockerfile content
+                echo "$DOCKERFILE_CONTENT" | docker build --no-cache -t "$IMAGE_NAME" -
+            fi
 
-    echo "Creating Docker container..."
-    docker run -it --name "$CONTAINER_NAME" "$IMAGE_NAME"
+            # Create and start a new container
+            docker run -it --name $CONTAINER_NAME $IMAGE_NAME
+        fi
+    fi
 
     echo "Connecting to Docker container..."
     docker exec -it "$CONTAINER_NAME" /bin/bash

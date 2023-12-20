@@ -12,7 +12,7 @@ source $(dirname $0)/helpers.sh
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATE_RC:-"true"}"
 RUBY_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-RBENV_DIR="${RBENVINSTALLPATH:-"/usr/local/rbenv"}"
+export RBENV_ROOT="${RBENVINSTALLPATH:-"/usr/local/rbenv"}"
 
 # Comma-separated list of ruby versions to be installed
 # alongside RUBY_VERSION, but not set as default.
@@ -54,13 +54,13 @@ EOF
 )
 
 umask 0002
-if [ ! -d "${RBENV_DIR}" ]; then
-  git clone https://github.com/rbenv/rbenv.git ${RBENV_DIR}
-  chown -R "root:rbenv" ${RBENV_DIR}
-  chmod -R g+rws "${RBENV_DIR}" 
+if [ ! -d "${RBENV_ROOT}" ]; then
+  git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
+  chown -R "root:rbenv" ${RBENV_ROOT}
+  chmod -R g+rws "${RBENV_ROOT}" 
 
-  git clone https://github.com/rbenv/ruby-build.git ${RBENV_DIR}/plugins/ruby-build
-  git clone https://github.com/jf/rbenv-gemset.git ${RBENV_DIR}/plugins/ruby-gemset
+  git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
+  git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
 else
     echo "rbenv already installed."
 fi
@@ -72,7 +72,7 @@ fi
 if [ "${RUBY_VERSION}" != "" ]; then
     # Find version using soft match
     find_version_from_git_tags RUBY_VERSION "https://github.com/ruby/ruby" "tags/v" "_"
-    su ${USERNAME} -c "export RBENV_ROOT=${RBENV_DIR}; export PATH=$RBENV_DIR/bin:\$PATH; rbenv install ${RUBY_VERSION}"
+    su ${USERNAME} -c "export RBENV_ROOT=${RBENV_ROOT}; export PATH=$RBENV_ROOT/bin:\$PATH; rbenv install ${RUBY_VERSION}"
 fi
 
 # Additional ruby versions to be installed but not be set as default.
@@ -81,7 +81,7 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=","
         read -a additional_versions <<< "$ADDITIONAL_VERSIONS"
         for version in "${additional_versions[@]}"; do
-            su ${USERNAME} -c "export PATH=$RBENV_DIR/bin:\$PATH; rbenv install ${version}"
+            su ${USERNAME} -c "export RBENV_ROOT=${RBENV_ROOT}; export PATH=$RBENV_ROOT/bin:\$PATH; rbenv install ${version}"
         done
     IFS=$OLDIFS
 fi

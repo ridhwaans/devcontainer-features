@@ -142,7 +142,7 @@ if [[ ! -d "/usr/local/share/.zsh/bundle" ]]; then
   git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
   chown -R "root:antigen" "${ANTIGEN_DIR}"
   chmod -R g+rws "${ANTIGEN_DIR}"
-  ln -s /usr/local/share/.zsh/bundle /etc/skel/.zsh
+  ln -s ${ANTIGEN_DIR} /etc/skel/.zsh
 fi
 
 echo "Installing powerline font..."
@@ -205,7 +205,7 @@ if [[ ! -d "/usr/local/share/.vim/bundle/Vundle.vim" ]]; then
   git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}
   chown -R "root:vundle" "${VUNDLE_DIR}"
   chmod -R g+rws "${VUNDLE_DIR}"
-  ln -s /usr/local/share/.vim/bundle/Vundle.vim /etc/skel/.vim
+  ln -s ${VUNDLE_DIR} /etc/skel/.vim
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
@@ -214,8 +214,8 @@ fi
 
 if [ "${SET_THEME}" = "true" ]; then
   sed -i '/^antigen theme/s/.*/antigen theme agnoster/' /etc/zsh/zshrc
-  sed -i '/^colorscheme/s/.*/colorscheme gotham256/' /etc/vim/vimrc
-  # alireza94.theme-gotham
+  sed -i '0,/^colorscheme/s//colorscheme gotham256/' /etc/vim/vimrc # replace the first occurrence 
+  command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
 fi
 
 #vim +silent! +PluginInstall +qall
