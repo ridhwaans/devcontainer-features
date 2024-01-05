@@ -132,7 +132,7 @@ antigen apply
 EOF
 )
 
-if [[ ! -d "/usr/local/share/.zsh/bundle" ]]; then
+if [[ ! -d "$ANTIGEN_DIR" ]]; then
   # Create antigen group
   if ! cat /etc/group | grep -e "^antigen:" > /dev/null 2>&1; then
       groupadd -r antigen
@@ -195,7 +195,7 @@ endtry
 EOF
 )
 
-if [[ ! -d "/usr/local/share/.vim/bundle/Vundle.vim" ]]; then
+if [[ ! -d "$VUNDLE_DIR" ]]; then
   # Create vundle group
   if ! cat /etc/group | grep -e "^vundle:" > /dev/null 2>&1; then
       groupadd -r vundle

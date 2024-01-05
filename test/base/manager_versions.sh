@@ -9,5 +9,11 @@ source dev-container-features-test-lib
 check "non-root user antigen" ls -al /usr/local/share/.zsh/bundle
 check "non-root user vundle" ls -al /usr/local/share/.vim/bundle/Vundle.vim
 
+# Check language managers
+check "check for nvm" nvm --version
+check "check for sdkman" sdk version
+check "check for ruby" rbenv --version
+check "check for python" pyenv --version
+
 # Report result
 reportResults

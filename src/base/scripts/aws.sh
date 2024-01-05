@@ -53,7 +53,7 @@ else
 fi
 
 # Install cfn-lint
-su ${USERNAME} -c 'command -v pyenv >/dev/null 2>&1 && pyenv exec pip install -U cfn-lint || echo "pyenv not found. Please install pyenv to use this script."'
+command -v pyenv >/dev/null 2>&1 && pyenv exec pip install -U cfn-lint || echo "pyenv not found. Please install pyenv to use this script."
 
 # Install terraform
 TERRAFORM_VERSION="${VERSION:-"latest"}"

@@ -1,8 +1,20 @@
 {
-  "username-default": {
-    "image": "ubuntu",
+  "common_utils": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        "common-utils": {}
+        "base": {}
+    }
+  },
+  "default_non_root_shell": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "base": {}
+    }
+  },
+  "manager_versions": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "base": {}
     }
   }
 }
