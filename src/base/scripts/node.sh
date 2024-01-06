@@ -10,13 +10,13 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATE_RC:-"true"}"
-NODE_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
+UPDATE_RC="${UPDATERC:-"true"}"
+NODE_VERSION="${NODEVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 NVM_DIR="${NVMINSTALLPATH:-"/usr/local/nvm"}"
 
 # Comma-separated list of node versions to be installed
 # alongside NODE_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${NODEADDITIONALVERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)

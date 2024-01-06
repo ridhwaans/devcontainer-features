@@ -12,8 +12,8 @@ check "non-root user vundle" ls -al /usr/local/share/.vim/bundle/Vundle.vim
 # Check language managers
 check "check for nvm" nvm --version
 check "check for sdkman" sdk version
-check "check for ruby" rbenv --version
-check "check for python" pyenv --version
+check "check for rbenv" rbenv --version
+check "check for pyenv" pyenv --version
 
 # Report result
 reportResults

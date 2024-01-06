@@ -10,8 +10,8 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATE_RC:-"true"}"
-GO_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
+UPDATE_RC="${UPDATERC:-"true"}"
+GO_VERSION="${GOVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 GO_DIR="${GOINSTALLPATH:-"/usr/local/go"}"
 GO_PATH="${GOPATH:-"/go"}"
 

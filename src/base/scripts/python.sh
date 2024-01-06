@@ -10,13 +10,13 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATE_RC:-"true"}"
-PYTHON_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
+UPDATE_RC="${UPDATERC:-"true"}"
+PYTHON_VERSION="${PYTHONVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 export PYENV_ROOT="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
 
 # Comma-separated list of python versions to be installed
 # alongside PYTHON_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${PYTHONADDITIONALVERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)

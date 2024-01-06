@@ -22,7 +22,7 @@ apt update
 apt install -y --no-install-recommends gh
 
 # Install exercism-cli
-EXERCISM_VERSION="${VERSION:-"latest"}"
+EXERCISM_VERSION="${EXERCISMVERSION:-"latest"}"
 
 if command -v exercism &> /dev/null; then
     echo "exercism is installed. Version: $(exercism version)"
@@ -56,7 +56,7 @@ fi
 command -v pyenv >/dev/null 2>&1 && pyenv exec pip install -U cfn-lint || echo "pyenv not found. Please install pyenv to use this script."
 
 # Install terraform
-TERRAFORM_VERSION="${VERSION:-"latest"}"
+TERRAFORM_VERSION="${TERRAFORMVERSION:-"latest"}"
 
 if command -v terraform &> /dev/null; then
     echo "terraform is installed. Version: $(terraform --version)"

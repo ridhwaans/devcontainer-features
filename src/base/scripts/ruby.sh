@@ -10,13 +10,13 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATE_RC:-"true"}"
-RUBY_VERSION="${VERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
+UPDATE_RC="${UPDATERC:-"true"}"
+RUBY_VERSION="${RUBYVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
 export RBENV_ROOT="${RBENVINSTALLPATH:-"/usr/local/rbenv"}"
 
 # Comma-separated list of ruby versions to be installed
 # alongside RUBY_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${RUBYADDITIONALVERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)

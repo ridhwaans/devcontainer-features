@@ -10,10 +10,10 @@ fi
 source $(dirname $0)/helpers.sh
 
 USERNAME="${USERNAME:-"automatic"}"
-USER_UID="${USER_UID:-"automatic"}"
-USER_GID="${USER_GID:-"automatic"}"
-UPDATE_RC="${UPDATE_RC:-"true"}"
-SET_THEME="${SET_THEME:-"true"}"
+USER_UID="${USERUID:-"automatic"}"
+USER_GID="${USERGID:-"automatic"}"
+UPDATE_RC="${UPDATERC:-"true"}"
+SET_THEME="${SETTHEME:-"true"}"
 VUNDLE_DIR="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle/Vundle.vim"}"
 ANTIGEN_DIR="${ANTIGENINSTALLPATH:-"/usr/local/share/.zsh/bundle"}"
 

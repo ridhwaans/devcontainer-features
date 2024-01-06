@@ -7,18 +7,148 @@
       "username": {
         "type": "string",
         "proposals": [
-            "ridhwaans",
-            "vscode",
-            "codespace",
-            "none"
+          "automatic",
+          "vscode",
+          "codespace",
+          "none"
         ],
-        "default": "ridhwaans",
-        "description": "Enter name of a non-root user to configure or none to skip"
+        "default": "automatic",
+        "description": "Enter the name of a non-root user to configure or 'none' to skip"
       },
       "setTheme": {
         "type": "boolean",
         "default": true,
         "description": "Apply theme to vim and zsh"
+      },
+      "userUid": {
+        "type": "string",
+        "default": "automatic",
+        "description": "User UID"
+      },
+      "userGid": {
+        "type": "string",
+        "default": "automatic",
+        "description": "User GID"
+      },
+      "updateRc": {
+        "type": "boolean",
+        "default": true,
+        "description": "Update RC files"
+      },
+      "vundleInstallPath": {
+        "type": "string",
+        "default": "/usr/local/share/.vim/bundle/Vundle.vim",
+        "description": "Vundle Install Path"
+      },
+      "antigenInstallPath": {
+        "type": "string",
+        "default": "/usr/local/share/.zsh/bundle",
+        "description": "Antigen Install Path"
+      },
+      "javaVersion": {
+        "type": "string",
+        "default": "lts",
+        "description": "Java Version"
+      },
+      "installGradle": {
+        "type": "boolean",
+        "default": false,
+        "description": "Install Gradle"
+      },
+      "gradleVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Gradle Version"
+      },
+      "installMaven": {
+        "type": "boolean",
+        "default": false,
+        "description": "Install Maven"
+      },
+      "mavenVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Maven Version"
+      },
+      "sdkmanInstallPath": {
+        "type": "string",
+        "default": "/usr/local/sdkman",
+        "description": "SDKMAN Install Path"
+      },
+      "javaAdditionalVersions": {
+        "type": "string",
+        "default": "",
+        "description": "Additional Java Versions"
+      },
+      "pythonVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Python Version"
+      },
+      "pyenvInstallPath": {
+        "type": "string",
+        "default": "/usr/local/pyenv",
+        "description": "Pyenv Install Path"
+      },
+      "pythonAdditionalVersions": {
+        "type": "string",
+        "default": "",
+        "description": "Additional Python Versions"
+      },
+      "rubyVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Ruby Version"
+      },
+      "rbenvInstallPath": {
+        "type": "string",
+        "default": "/usr/local/rbenv",
+        "description": "Rbenv Install Path"
+      },
+      "rubyAdditionalVersions": {
+        "type": "string",
+        "default": "",
+        "description": "Additional Ruby Versions"
+      },
+      "nodeVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Node.js Version"
+      },
+      "nvmInstallPath": {
+        "type": "string",
+        "default": "/usr/local/nvm",
+        "description": "NVM Install Path"
+      },
+      "nodeAdditionalVersions": {
+        "type": "string",
+        "default": "",
+        "description": "Additional Node.js Versions"
+      },
+      "goVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Go Version"
+      },
+      "goInstallPath": {
+        "type": "string",
+        "default": "/usr/local/go",
+        "description": "Go Install Path"
+      },
+      "goPath": {
+        "type": "string",
+        "default": "/go",
+        "description": "Go Path"
+      },
+      "exercismVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Exercism Version"
+      },
+      "terraformVersion": {
+        "type": "string",
+        "default": "latest",
+        "description": "Terraform Version"
       }
     },
     "customizations": {
