@@ -14,7 +14,7 @@ USER_UID="${USERUID:-"automatic"}"
 USER_GID="${USERGID:-"automatic"}"
 UPDATE_RC="${UPDATERC:-"true"}"
 SET_THEME="${SETTHEME:-"true"}"
-VUNDLE_DIR="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle/Vundle.vim"}"
+VUNDLE_DIR="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle"}"
 ANTIGEN_DIR="${ANTIGENINSTALLPATH:-"/usr/local/share/.zsh/bundle"}"
 
 # Ensure apt is in non-interactive to avoid prompts
@@ -107,19 +107,19 @@ echo "Set default shell..."
 chsh --shell /bin/zsh ${USERNAME}
 
 
-zsh_rc_snippet=$(cat << 'EOF'
+zsh_rc_snippet=$(cat <<EOF
 # General
-ADOTDIR=/usr/local/share/.zsh/bundle
-ANTIGEN_LOG=${ADOTDIR}/antigen.log
+ADOTDIR="$ANTIGEN_DIR"
+ANTIGEN_LOG=\${ADOTDIR}/antigen.log
 
 # Customization
-ANTIGEN_CACHE=${ADOTDIR}/init.zsh
-ANTIGEN_COMPDUMP=${ADOTDIR}/.zcompdump
-ANTIGEN_BUNDLES=${ADOTDIR}/bundles
-ANTIGEN_LOCK=${ADOTDIR}/.lock
-ANTIGEN_DEBUG_LOG=${ADOTDIR}/debug.log
+ANTIGEN_CACHE=\${ADOTDIR}/init.zsh
+ANTIGEN_COMPDUMP=\${ADOTDIR}/.zcompdump
+ANTIGEN_BUNDLES=\${ADOTDIR}/bundles
+ANTIGEN_LOCK=\${ADOTDIR}/.lock
+ANTIGEN_DEBUG_LOG=\${ADOTDIR}/debug.log
 
-source ${ADOTDIR}/bin/antigen.zsh
+source \${ADOTDIR}/bin/antigen.zsh
 
 # Load the oh-my-zsh's library.
 antigen use oh-my-zsh
@@ -154,13 +154,13 @@ if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "${zsh_rc_snippet}" "zsh"
 fi
 
-vim_rc_snippet=$(cat << 'EOF'
+vim_rc_snippet=$(cat <<EOF
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=/usr/local/share/.vim/bundle/Vundle.vim
-call vundle#begin('/usr/local/share/.vim/bundle')
+set rtp+="$VUNDLE_DIR/Vundle.vim"
+call vundle#begin("$VUNDLE_DIR")
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 

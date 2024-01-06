@@ -71,5 +71,10 @@ for script in "${scripts[@]}"; do
     ((current_script++))
 done
 
-# Exit with the exit code of the last executed script
-exit $?
+exit_status=$?
+
+if [ $exit_status -eq 0 ]; then
+    eval "$(source /etc/bash.bashrc)"
+fi
+
+exit $exit_status

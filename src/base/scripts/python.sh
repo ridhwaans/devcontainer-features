@@ -36,15 +36,14 @@ if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
 fi
 usermod -a -G pyenv ${USERNAME}
 
-pyenv_rc_snippet=$(cat << 'EOF'
+pyenv_rc_snippet=$(cat <<EOF
+export PYENV_ROOT="$PYENV_ROOT"
 
-export PYENV_ROOT="/usr/local/pyenv"
+[[ -d \$PYENV_ROOT/bin ]] && export PATH="\$PYENV_ROOT/bin:\$PATH"
 
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "\$(pyenv init -)"
 
-eval "$(pyenv init -)"
-
-eval "$(pyenv virtualenv-init -)"
+eval "\$(pyenv virtualenv-init -)"
 EOF
 )
 

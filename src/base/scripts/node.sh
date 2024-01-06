@@ -12,7 +12,7 @@ source $(dirname $0)/helpers.sh
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATERC:-"true"}"
 NODE_VERSION="${NODEVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-NVM_DIR="${NVMINSTALLPATH:-"/usr/local/nvm"}"
+export NVM_DIR="${NVMINSTALLPATH:-"/usr/local/nvm"}"
 
 # Comma-separated list of node versions to be installed
 # alongside NODE_VERSION, but not set as default.
@@ -36,13 +36,12 @@ elif [ "${NODE_VERSION}" = "latest" ]; then
     NODE_VERSION="node"
 fi
 
-nvm_rc_snippet="$(cat << 'EOF'
+nvm_rc_snippet=$(cat <<EOF
+export NVM_DIR="\$([ -z "\${XDG_CONFIG_HOME-}" ] && printf %s "$NVM_DIR" || printf %s "\${XDG_CONFIG_HOME}/nvm")"
 
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "/usr/local/nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
 EOF
-)"
+)
 
 umask 0002
 if [ ! -d "${NVM_DIR}" ]; then

@@ -43,11 +43,9 @@ chmod -R g+rws "${GO_DIR}" "${GO_PATH}"
 
 export PATH=$PATH:/usr/local/go/bin
 
-go_rc_snippet=$(cat << 'EOF'
-
-export PATH=/usr/local/go/bin:$PATH
-
-export GOPATH=/go
+go_rc_snippet=$(cat << EOF
+export PATH="$GO_DIR:\$PATH"
+export GOPATH="$GO_PATH"
 EOF
 )
 

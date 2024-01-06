@@ -61,11 +61,10 @@ sdk_install() {
     su ${USERNAME} -c "umask 0002 && . ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install ${install_type} ${requested_version} && sdk flush archives && sdk flush temp"
 }
 
-sdkman_rc_snippet=$(cat << 'EOF'
+sdkman_rc_snippet=$(cat <<EOF
+export SDKMAN_DIR="$SDKMAN_DIR"
 
-export SDKMAN_DIR="/usr/local/sdkman"
-
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+[[ -s "\$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "\$SDKMAN_DIR/bin/sdkman-init.sh"
 EOF
 )
 

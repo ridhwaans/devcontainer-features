@@ -43,13 +43,12 @@ elif [ "${RUBY_VERSION}" = "latest" ]; then
     RUBY_VERSION="3.2.2"
 fi
 
-rbenv_rc_snippet=$(cat << 'EOF'
+rbenv_rc_snippet=$(cat <<EOF
+export RBENV_ROOT="$RBENV_ROOT"
 
-export RBENV_ROOT="/usr/local/rbenv"
+[[ -d \$RBENV_ROOT/bin ]] && export PATH="\$RBENV_ROOT/bin:\$PATH"
 
-[[ -d $RBENV_ROOT/bin ]] && export PATH="$RBENV_ROOT/bin:$PATH"
-
-eval "$(rbenv init -)"
+eval "\$(rbenv init -)"
 EOF
 )
 
