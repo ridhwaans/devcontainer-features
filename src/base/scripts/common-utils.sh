@@ -7,15 +7,18 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/helpers.sh
+source $(dirname $0)/_helper.sh
 
 USERNAME="${USERNAME:-"automatic"}"
 USER_UID="${USERUID:-"automatic"}"
 USER_GID="${USERGID:-"automatic"}"
 UPDATE_RC="${UPDATERC:-"true"}"
+VUNDLE_DIR="${VUNDLEDIR:-"/usr/local/share/.vim/bundle"}"
+VIMRCPATH="${VIMRCPATH:-"/etc/vim/vimrc"}"
+ANTIGEN_DIR="${ANTIGENDIR:-"/usr/local/share/.zsh/bundle"}"
+ZSHRCPATH="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
+BASHRCPATH="${BASHRCPATH:-"/etc/bash.bashrc"}"
 SET_THEME="${SETTHEME:-"true"}"
-VUNDLE_DIR="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle"}"
-ANTIGEN_DIR="${ANTIGENINSTALLPATH:-"/usr/local/share/.zsh/bundle"}"
 
 # Ensure apt is in non-interactive to avoid prompts
 export DEBIAN_FRONTEND=noninteractive
@@ -151,7 +154,7 @@ fc-cache -f -v
 fc-list | grep "Roboto Mono for Powerline.ttf"
 
 if [ "${UPDATE_RC}" = "true" ]; then
-  updaterc "${zsh_rc_snippet}" "zsh"
+  updaterc "zsh" "${zsh_rc_snippet}"
 fi
 
 vim_rc_snippet=$(cat <<EOF
@@ -159,8 +162,8 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+="$VUNDLE_DIR/Vundle.vim"
-call vundle#begin("$VUNDLE_DIR")
+set rtp+=$VUNDLE_DIR/Vundle.vim
+call vundle#begin('$VUNDLE_DIR')
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
@@ -170,7 +173,7 @@ Plugin 'VundleVim/Vundle.vim'
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
-Plugin 'whatyouhide/vim-gotham'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -187,7 +190,7 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 try
-  colorscheme gotham256
+  colorscheme default
 catch /^Vim\%((\a\+)\)\=:E185/
   colorscheme default
   set background=dark
@@ -202,20 +205,27 @@ if [[ ! -d "$VUNDLE_DIR" ]]; then
   fi
   usermod -a -G vundle ${USERNAME}
 
-  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}
-  chown -R "root:vundle" "${VUNDLE_DIR}"
-  chmod -R g+rws "${VUNDLE_DIR}"
-  ln -s ${VUNDLE_DIR} /etc/skel/.vim
+  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
+  chown -R "root:vundle" "${VUNDLE_DIR}/Vundle.vim"
+  chmod -R g+rws "${VUNDLE_DIR}/Vundle.vim"
+  ln -s ${VUNDLE_DIR}/Vundle.vim /etc/skel/.vim
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
-  updaterc "${vim_rc_snippet}" "vim"
+  updaterc "vim" "${vim_rc_snippet}" 
+  vim +silent! +PluginInstall +qall
 fi
 
 if [ "${SET_THEME}" = "true" ]; then
-  sed -i '/^antigen theme/s/.*/antigen theme agnoster/' /etc/zsh/zshrc
-  sed -i '0,/^colorscheme/s//colorscheme gotham256/' /etc/vim/vimrc # replace the first occurrence 
+  echo "Setting theme..."
+  colorscheme="Plugin 'whatyouhide/vim-gotham'"
+  if ! grep -qF "$colorscheme" $VIMRCPATH; then
+    sed -i "/Plugin 'VundleVim\/Vundle.vim'/a $colorscheme" $VIMRCPATH
+  fi
+  vim +silent! +PluginInstall +qall
+  sed -i '/try/{n;s/.*/colorscheme gotham256/;}' $VIMRCPATH
+
+  sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRCPATH
   command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
 fi
 
-#vim +silent! +PluginInstall +qall

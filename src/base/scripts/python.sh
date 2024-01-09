@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/helpers.sh
+source $(dirname $0)/_helper.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATERC:-"true"}"
@@ -59,7 +59,8 @@ else
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
-    updaterc "${pyenv_rc_snippet}"
+    updaterc "zsh" "${pyenv_rc_snippet}"
+    updaterc "bash" "${pyenv_rc_snippet}"
 fi
 
 if [ "${PYTHON_VERSION}" != "" ]; then

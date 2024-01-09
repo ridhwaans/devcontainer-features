@@ -35,12 +35,27 @@
         "default": true,
         "description": "Update RC files"
       },
-      "vundleInstallPath": {
+      "vimRcPath": {
+        "type": "string",
+        "default": "/etc/vim/vimrc",
+        "description": "Path to the vimrc file"
+      },
+      "zshRcPath": {
+        "type": "string",
+        "default": "/etc/zsh/zshrc",
+        "description": "Path to the zshrc file"
+      },
+      "bashRcPath": {
+        "type": "string",
+        "default": "/etc/bash.bashrc",
+        "description": "Path to the bashrc file"
+      },
+      "vundleDir": {
         "type": "string",
         "default": "/usr/local/share/.vim/bundle/Vundle.vim",
         "description": "Vundle Install Path"
       },
-      "antigenInstallPath": {
+      "antigenDir": {
         "type": "string",
         "default": "/usr/local/share/.zsh/bundle",
         "description": "Antigen Install Path"

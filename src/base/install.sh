@@ -8,12 +8,15 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 USERNAME="${USERNAME:-"automatic"}"
-USERUID="${USERUID:-"automatic"}"
-USERGID="${USERGID:-"automatic"}"
-UPDATERC="${UPDATERC:-"true"}"
-SETTHEME="${SETTHEME:-"true"}"
-VUNDLEINSTALLPATH="${VUNDLEINSTALLPATH:-"/usr/local/share/.vim/bundle/Vundle.vim"}"
-ANTIGENINSTALLPATH="${ANTIGENINSTALLPATH:-"/usr/local/share/.zsh/bundle"}"
+USER_UID="${USERUID:-"automatic"}"
+USER_GID="${USERGID:-"automatic"}"
+UPDATE_RC="${UPDATERC:-"true"}"
+VUNDLE_DIR="${VUNDLEDIR:-"/usr/local/share/.vim/bundle"}"
+VIMRCPATH="${VIMRCPATH:-"/etc/vim/vimrc"}"
+ANTIGEN_DIR="${ANTIGENDIR:-"/usr/local/share/.zsh/bundle"}"
+ZSHRCPATH="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
+BASHRCPATH="${BASHRCPATH:-"/etc/bash.bashrc"}"
+SET_THEME="${SETTHEME:-"true"}"
 
 JAVAVERSION="${JAVAVERSION:-"lts"}"
 INSTALLGRADLE="${INSTALLGRADLE:-"false"}"

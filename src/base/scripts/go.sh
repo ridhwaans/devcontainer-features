@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/helpers.sh
+source $(dirname $0)/_helper.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATERC:-"true"}"
@@ -50,7 +50,8 @@ EOF
 )
 
 if [ "${UPDATE_RC}" = "true" ]; then
-    updaterc "${go_rc_snippet}"
+  updaterc "zsh" "${go_rc_snippet}"
+  updaterc "bash" "${go_rc_snippet}"
 fi
 
 echo "Done!"

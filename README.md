@@ -16,9 +16,8 @@ windows
 
 ## manual build
 ```
-$ devcontainer-features> cd src/base
-$ src/base> source container.sh
-$ src/base> reopen_in_container
+$ devcontainer-features> cd src/base && source container.sh
+$ src/base> cleanup_container && reopen_in_container
 $ /usr/local/bin/bootstrap> ./install.sh
 $ /usr/local/bin/bootstrap> su - yourusername
 ```

@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/helpers.sh
+source $(dirname $0)/_helper.sh
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATERC:-"true"}"
@@ -83,7 +83,8 @@ if [ ! -d "${SDKMAN_DIR}" ]; then
 fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
-    updaterc "${sdkman_rc_snippet}"
+    updaterc "zsh" "${sdkman_rc_snippet}"
+    updaterc "bash" "${sdkman_rc_snippet}"
 fi
 
 sdk_install java ${JAVA_VERSION} "\\s*" "(\\.[a-z0-9]+)*-${JDK_DISTRO}\\s*" ".*-[a-z]+$" "true"

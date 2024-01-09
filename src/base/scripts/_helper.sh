@@ -14,30 +14,33 @@ which_env() {
   fi
 }
 
+declare -A rc_paths=(
+  [vim]="${VIMRCPATH:-"/etc/vim/vimrc"}"
+  [bash]="${BASHRCPATH:-"/etc/bash.bashrc"}"
+  [zsh]="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
+)
+
 updaterc() {
-  local text_to_add="$1"
-  local rc_file="$2"
-  
+  get_rc_path() {
+    local key=$1
+    echo "${rc_paths[$key]}"
+  }
+
   update_file() {
-    local file_path="$1"
-    if [ -f $file_path ] && [[ "$(cat $file_path)" != *"$text_to_add"* ]]; then
+    local file_path=$1
+    local text_to_add=$2
+    
+    if [ -f "$file_path" ] && [[ $(cat "$file_path") != *"$text_to_add"* ]]; then
       echo "Updating $file_path..."
       echo -e "$text_to_add" >> "$file_path"
     fi
   }
 
-  case "$rc_file" in
-    zsh)
-      update_file "/etc/zsh/zshrc"
-      ;;
-    vim)
-      update_file "/etc/vim/vimrc"
-      ;;
-    *)
-      update_file "/etc/bash.bashrc"
-      update_file "/etc/zsh/zshrc"
-      ;;
-  esac
+  local param=$1
+  local update_value=$2
+
+  local rc_path=$(get_rc_path "$param")
+  update_file "$rc_path" "$update_value"
 }
 
 get_non_root_user() {

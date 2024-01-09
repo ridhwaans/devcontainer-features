@@ -22,8 +22,8 @@ A devcontainer feature
 | userGid                  | User GID                                          | string  | automatic                       |
 | updateRc                 | Update RC files                                   | boolean | true                            |
 | setTheme                 | Set theme for vim and zsh                         | boolean | true                            |
-| vundleInstallPath        | Vundle Install Path                               | string  | /usr/local/share/.vim/bundle/Vundle.vim |
-| antigenInstallPath       | Antigen Install Path                              | string  | /usr/local/share/.zsh/bundle    |
+| vundleDir                | Vundle Install Path                               | string  | /usr/local/share/.vim/bundle    |
+| antigenDir               | Antigen Install Path                              | string  | /usr/local/share/.zsh/bundle    |
 | javaVersion              | Java Version                                      | string  | lts                             |
 | installGradle            | Install Gradle                                    | boolean | false                           |
 | gradleVersion            | Gradle Version                                    | string  | latest                          |
@@ -45,6 +45,8 @@ A devcontainer feature
 | goPath                   | Go Path                                           | string  | /go                             |
 | exercismVersion          | Exercism Version                                  | string  | latest                          |
 | terraformVersion         | Terraform Version                                 | string  | latest                          |
-
+| vimRcPath                | Path to the vimrc file                            | string  | /etc/vim/vimrc                 |
+| zshRcPath                | Path to the zshrc file                            | string  | /etc/zsh/zshrc                 |
+| bashRcPath               | Path to the bashrc file                           | string  | /etc/bash.bashrc               |
 
 ---
