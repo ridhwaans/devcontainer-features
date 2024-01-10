@@ -24,6 +24,9 @@ A devcontainer feature
 | setTheme                 | Set theme for vim and zsh                         | boolean | true                            |
 | vundleDir                | Vundle Install Path                               | string  | /usr/local/share/.vim/bundle    |
 | antigenDir               | Antigen Install Path                              | string  | /usr/local/share/.zsh/bundle    |
+| vimRcPath                | Path to the vimrc file                            | string  | /etc/vim/vimrc                 |
+| zshRcPath                | Path to the zshrc file                            | string  | /etc/zsh/zshrc                 |
+| bashRcPath               | Path to the bashrc file                           | string  | /etc/bash.bashrc               |
 | javaVersion              | Java Version                                      | string  | lts                             |
 | installGradle            | Install Gradle                                    | boolean | false                           |
 | gradleVersion            | Gradle Version                                    | string  | latest                          |
@@ -45,8 +48,5 @@ A devcontainer feature
 | goPath                   | Go Path                                           | string  | /go                             |
 | exercismVersion          | Exercism Version                                  | string  | latest                          |
 | terraformVersion         | Terraform Version                                 | string  | latest                          |
-| vimRcPath                | Path to the vimrc file                            | string  | /etc/vim/vimrc                 |
-| zshRcPath                | Path to the zshrc file                            | string  | /etc/zsh/zshrc                 |
-| bashRcPath               | Path to the bashrc file                           | string  | /etc/bash.bashrc               |
 
 ---

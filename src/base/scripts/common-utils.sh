@@ -221,8 +221,8 @@ if [ "${SET_THEME}" = "true" ]; then
   colorscheme="Plugin 'whatyouhide/vim-gotham'"
   if ! grep -qF "$colorscheme" $VIMRCPATH; then
     sed -i "/Plugin 'VundleVim\/Vundle.vim'/a $colorscheme" $VIMRCPATH
+    vim +silent! +PluginInstall +qall
   fi
-  vim +silent! +PluginInstall +qall
   sed -i '/try/{n;s/.*/colorscheme gotham256/;}' $VIMRCPATH
 
   sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRCPATH

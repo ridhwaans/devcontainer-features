@@ -74,10 +74,4 @@ for script in "${scripts[@]}"; do
     ((current_script++))
 done
 
-exit_status=$?
-
-if [ $exit_status -eq 0 ]; then
-    eval "$(source /etc/bash.bashrc)"
-fi
-
-exit $exit_status
+exit $?
