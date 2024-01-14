@@ -37,9 +37,8 @@ elif [ "${NODE_VERSION}" = "latest" ]; then
 fi
 
 nvm_rc_snippet=$(cat <<EOF
-export NVM_DIR="\$([ -z "\${XDG_CONFIG_HOME-}" ] && printf %s "$NVM_DIR" || printf %s "\${XDG_CONFIG_HOME}/nvm")"
-
-[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+export NVM_DIR="${NVM_DIR}"
+[ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
 EOF
 )
 

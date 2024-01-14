@@ -41,10 +41,8 @@ fi
 chown -R "root:golang" "${GO_DIR}" "${GO_PATH}"
 chmod -R g+rws "${GO_DIR}" "${GO_PATH}"
 
-export PATH=$PATH:/usr/local/go/bin
-
 go_rc_snippet=$(cat << EOF
-export PATH="$GO_DIR:\$PATH"
+export PATH="$GO_DIR/bin:\$PATH"
 export GOPATH="$GO_PATH"
 EOF
 )
