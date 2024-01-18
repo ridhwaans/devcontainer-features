@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 
-#set -e
+set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib
@@ -8,10 +8,6 @@ source dev-container-features-test-lib
 # Check plugin managers
 check "non-root user antigen" ls -al /usr/local/share/.zsh/bundle
 check "non-root user vundle" ls -al /usr/local/share/.vim/bundle/Vundle.vim
-
-current_user=$(whoami)
-echo "Hello, $current_user!"
-echo "Current shell: $SHELL"
 
 source /etc/zsh/zshrc
 

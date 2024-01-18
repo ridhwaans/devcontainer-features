@@ -5,7 +5,7 @@
         "base": {}
     }
   },
-  "default_non_root_shell": {
+  "non_root_user_default_shell": {
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
         "base": {}

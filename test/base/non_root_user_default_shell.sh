@@ -10,7 +10,7 @@ echo "Hello, $current_user!"
 echo "Current shell: $SHELL"
 
 # Definition specific tests
-check "default non-root shell is zsh" sudo grep "^vscode:" /etc/passwd | cut -d: -f7
+check "non-root user default shell is zsh" sudo grep "^$current_user:" /etc/passwd | cut -d: -f7
 
 # Report result
 reportResults
