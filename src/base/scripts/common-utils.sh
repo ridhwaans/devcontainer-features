@@ -228,4 +228,3 @@ if [ "${SET_THEME}" = "true" ]; then
   sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRCPATH
   command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
 fi
-

@@ -1,21 +1,25 @@
 #!/bin/bash
 
 reopen_in_container() {
-    local IMAGE_NAME="${1:-"base"}"
-    local CONTAINER_NAME="${2:-"instance"}"
+    local BASE_IMAGE="${1:-"ubuntu"}"
+    local IMAGE_NAME="${2:-"base"}"
+    local CONTAINER_NAME="${3:-"instance"}"
+    local STARTING_DIR="${3:-"/usr/local/bin/bootstrap"}"
 
     DOCKERFILE_CONTENT=$(cat <<'EOF'
-FROM ubuntu
+ARG BASE_IMAGE_VERSION=latest
 
-ARG CONTAINER_DIR=/usr/local/bin/bootstrap
+FROM ubuntu:$BASE_IMAGE_VERSION
 
-RUN mkdir -p $CONTAINER_DIR
+ARG WORKING_DIR=/usr/local/bin/bootstrap
 
-COPY install.sh $CONTAINER_DIR/
+RUN mkdir -p $WORKING_DIR
 
-COPY scripts/ $CONTAINER_DIR/scripts/
+COPY install.sh $WORKING_DIR/
 
-WORKDIR $CONTAINER_DIR
+COPY scripts/ $WORKING_DIR/scripts/
+
+WORKDIR $WORKING_DIR
 EOF
 )
 

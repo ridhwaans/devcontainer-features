@@ -52,7 +52,7 @@ scripts=(
   ruby.sh
   node.sh
   go.sh
-  aws.sh
+  tools.sh
 )
 script_dir="$(dirname "$0")/scripts"
 

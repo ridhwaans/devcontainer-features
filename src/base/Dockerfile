@@ -1,11 +1,13 @@
-FROM ubuntu
+ARG BASE_IMAGE_VERSION=latest
 
-ARG CONTAINER_DIR=/usr/local/bin/bootstrap
+FROM ubuntu:$BASE_IMAGE_VERSION
 
-RUN mkdir -p $CONTAINER_DIR
+ARG WORKING_DIR=/usr/local/bin/bootstrap
 
-COPY install.sh $CONTAINER_DIR/
+RUN mkdir -p $WORKING_DIR
 
-COPY scripts/ $CONTAINER_DIR/scripts/
+COPY install.sh $WORKING_DIR/
 
-WORKDIR $CONTAINER_DIR
+COPY scripts/ $WORKING_DIR/scripts/
+
+WORKDIR $WORKING_DIR
