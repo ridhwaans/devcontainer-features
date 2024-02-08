@@ -1,18 +1,18 @@
 {
   "common_utils": {
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
         "base": {}
     }
   },
   "non_root_user_default_shell": {
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
         "base": {}
     }
   },
   "manager_versions": {
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
         "base": {}
     }

@@ -1,19 +1,5 @@
 #!/bin/bash
 
-which_env() {
-  if [ $(uname) = Darwin ]; then
-    return "(mac)"
-  elif [ $(uname) = Linux ]; then
-    if [ -n "$WSL_DISTRO_NAME" ]; then
-      return "(wsl)"
-    elif [ -n "$CODESPACES" ]; then
-      return "(github codespaces)"
-    else
-		  return "(native linux)"
-    fi
-  fi
-}
-
 declare -A rc_paths=(
   [vim]="${VIMRCPATH:-"/etc/vim/vimrc"}"
   [bash]="${BASHRCPATH:-"/etc/bash.bashrc"}"
