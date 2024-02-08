@@ -11,36 +11,31 @@ which_env() {
     elif [ -n "$CODESPACES" ]; then
       return "(github codespaces)"
     else
-		  return "(native linux)"
+        return "(native linux)"
     fi
   fi
 }
 
-echo "Checking existing Docker containers..."
-containers=$(docker ps -a --format '{{.Names}}')
+install_local() {
+    sudo bash -c "cd src/base && ./install.sh"
+}
 
-if [ -z "$containers" ]; then
-    echo "No existing Docker containers found."
-else
-    echo "Existing Docker containers:"
-    echo "$containers"
-fi
-
-echo ""
-
-echo "Checking existing Docker images..."
-images=$(docker images --format '{{.Repository}}:{{.Tag}}')
-
-if [ -z "$images" ]; then
-    echo "No existing Docker images found."
-else
-    echo "Existing Docker images:"
-    echo "$images"
-fi
-
-echo ""
 # Function to display the Docker installation menu
 docker_installation_menu() {
+    containers=$(docker ps -a --format '{{.Names}}')
+    if [ "$containers" ]; then
+        echo "Existing Docker containers:"
+        echo "$containers"
+    fi
+
+    echo ""
+    images=$(docker images --format '{{.Repository}}:{{.Tag}}')
+    if [ "$images" ]; then
+        echo "Existing Docker images:"
+        echo "$images"
+    fi
+
+    echo ""
     echo "Select Docker installation type:"
     echo "1. Install into Docker container"
     echo "2. Go back to previous menu"
@@ -65,9 +60,8 @@ case $choice in
             read -p "Enter your choice (1 or 2): " docker_choice
             case $docker_choice in
                 1)
-                    read -p "Enter the name for the new Docker container: " container_name
-                    echo "Installing into a new Docker container named $container_name..."
-                    # Add your installation commands for a new Docker container here
+                    read -p "Enter the name for the Docker container: " container_name
+                    install_in_container
                     ;;
                 2)
                     break  # Go back to previous menu

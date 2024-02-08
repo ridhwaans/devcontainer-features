@@ -2,14 +2,14 @@
 
 perform_install() {
     # Step 1: Create directory /usr/local/bin/bootstrap if it doesn't exist
-    docker exec -it "$CONTAINER_NAME" bash -c '[ -d "$STARTING_DIR" ] || mkdir -p "$STARTING_DIR"'
+    docker exec -it "$CONTAINER_NAME" bash -c '[ -d "$WORKING_DIR" ] || mkdir -p "$WORKING_DIR"'
 
     # Step 2: Copy install.sh and scripts/ from the host machine into the container
-    docker cp install.sh "$CONTAINER_NAME":$STARTING_DIR
-    docker cp scripts/ "$CONTAINER_NAME":$STARTING_DIR
+    docker cp $CLIENT_DIR/install.sh "$CONTAINER_NAME":$WORKING_DIR
+    docker cp $CLIENT_DIR/scripts/ "$CONTAINER_NAME":$WORKING_DIR/scripts/
 
     # Step 3: Connect into the container and run install.sh
-    docker exec -it "$CONTAINER_NAME" /bin/bash -c 'cd "$STARTING_DIR" && ./install.sh'
+    docker exec -it "$CONTAINER_NAME" /bin/bash -c 'cd "$WORKING_DIR" && sudo ./install.sh'
 }
 
 
@@ -58,7 +58,6 @@ install_in_container() {
     if [ "$(docker inspect -f '{{.State.Running}}' $CONTAINER_NAME 2>/dev/null)" = "true" ]; then
         echo "Container $CONTAINER_NAME is already running."
         
-        perform_install
     else
         # Check if the container exists but is stopped
         if [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER_NAME 2>/dev/null)" = "exited" ]; then
@@ -67,8 +66,6 @@ install_in_container() {
 
             # Start the existing stopped container
             docker start -i $CONTAINER_NAME
-
-            perform_install
         else
             # Container does not exist
             build_image
@@ -80,7 +77,7 @@ install_in_container() {
         fi
     fi
 
-    echo "Connecting to Docker container..."
+    echo "Installing in Docker container..."
     perform_install
 
     # Create and start a new container but do not run anything

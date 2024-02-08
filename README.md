@@ -14,15 +14,12 @@ windows
 - **GET** [Docker Desktop](https://www.docker.com/products/docker-desktop/)  
 - **GET** [VS Code Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)  
 
-## manual build
-```
-$ devcontainer-features> cd src/base && source container.sh
-$ src/base> cleanup_container && reopen_in_container
-$ /usr/local/bin/bootstrap> ./install.sh
-$ /usr/local/bin/bootstrap> su - yourusername
-```
-
 ## development
+
+| development image                                                                   | supported-features                                                                                       | 
+|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| (javascript-node)[https://hub.docker.com/_/microsoft-devcontainers-javascript-node] | [docker-in-docker](https://github.com/devcontainers/features/pkgs/container/features%2Fdocker-in-docker) |
+
 in VS Code, select `Dev Containers: Reopen in Container`, or  
 `Dev Containers: Rebuild Without Cache and Reopen in Container` 
 
