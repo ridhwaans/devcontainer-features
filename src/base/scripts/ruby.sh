@@ -21,26 +21,63 @@ ADDITIONAL_VERSIONS="${RUBYADDITIONALVERSIONS:-""}"
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 
-# Ensure apt is in non-interactive to avoid prompts
-export DEBIAN_FRONTEND=noninteractive
+# Mac OS packages
+install_mac_packages() {
+    packages=(
+		rbenv
+		ruby-build
+        rbenv-gemset
+	)
+	brew install "${packages[@]}"
+}
 
-# General requirements 
-# https://stackoverflow.com/a/9510209/3577482, https://github.com/rbenv/ruby-build/discussions/2118
-apt install -y --no-install-recommends ca-certificates software-properties-common build-essential gnupg2 libreadline-dev \
-                                    procps dirmngr gawk autoconf automake bison libffi-dev libgdbm-dev libncurses5-dev \
-                                    libsqlite3-dev libtool libyaml-dev pkg-config sqlite3 zlib1g-dev libgmp-dev libssl-dev
+# Debian / Ubuntu packages
+install_debian_packages(){
+    # Ensure apt is in non-interactive to avoid prompts
+    export DEBIAN_FRONTEND=noninteractive
 
-# Create rbenv group to the user's UID or GID to change while still allowing access to rbenv
-if ! cat /etc/group | grep -e "^rbenv:" > /dev/null 2>&1; then
-    groupadd -r rbenv
-fi
-usermod -a -G rbenv ${USERNAME}
+    # General requirements 
+    # https://stackoverflow.com/a/9510209/3577482, https://github.com/rbenv/ruby-build/discussions/2118
+    apt install -y --no-install-recommends ca-certificates software-properties-common build-essential gnupg2 libreadline-dev \
+                                        procps dirmngr gawk autoconf automake bison libffi-dev libgdbm-dev libncurses5-dev \
+                                        libsqlite3-dev libtool libyaml-dev pkg-config sqlite3 zlib1g-dev libgmp-dev libssl-dev
+}
 
-# Adjust ruby version if required
-if [ "${RUBY_VERSION}" = "none" ]; then
-    RUBY_VERSION=
-elif [ "${RUBY_VERSION}" = "latest" ]; then
-    RUBY_VERSION="3.2.2"
+# Install packages for appropriate OS
+case "${ADJUSTED_ID}" in
+    "debian")
+        install_debian_packages
+        ;;
+    "mac")
+        install_mac_packages
+        ;;
+esac
+
+if [ "$ADJUSTED_ID" != "mac" ]; then
+    # Create rbenv group to the user's UID or GID to change while still allowing access to rbenv
+    if ! cat /etc/group | grep -e "^rbenv:" > /dev/null 2>&1; then
+        groupadd -r rbenv
+    fi
+    usermod -a -G rbenv ${USERNAME}
+
+    # Adjust ruby version if required
+    if [ "${RUBY_VERSION}" = "none" ]; then
+        RUBY_VERSION=
+    elif [ "${RUBY_VERSION}" = "latest" ]; then
+        RUBY_VERSION="3.2.2"
+    fi
+
+    umask 0002
+    if [ ! -d "${RBENV_ROOT}" ]; then
+    git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
+    chown -R "root:rbenv" ${RBENV_ROOT}
+    chmod -R g+rws "${RBENV_ROOT}" 
+
+    git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
+    git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
+    else
+        echo "rbenv already installed."
+    fi
 fi
 
 rbenv_rc_snippet=$(cat <<EOF
@@ -51,18 +88,6 @@ export RBENV_ROOT="$RBENV_ROOT"
 eval "\$(rbenv init -)"
 EOF
 )
-
-umask 0002
-if [ ! -d "${RBENV_ROOT}" ]; then
-  git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
-  chown -R "root:rbenv" ${RBENV_ROOT}
-  chmod -R g+rws "${RBENV_ROOT}" 
-
-  git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
-  git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
-else
-    echo "rbenv already installed."
-fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "zsh" "${rbenv_rc_snippet}"

@@ -45,6 +45,21 @@ GOPATH="${GOPATH:-"/go"}"
 EXERCISMVERSION="${EXERCISMVERSION:-"latest"}"
 TERRAFORMVERSION="${TERRAFORMVERSION:-"latest"}"
 
+if [ $(uname) = Darwin ]; then
+    ADJUSTED_ID="mac"
+elif [ $(uname) = Linux ]; then
+    # Bring in ID, ID_LIKE, VERSION_ID, VERSION_CODENAME
+    . /etc/os-release
+
+    # Get an adjusted ID independent of distro variants
+    if [ "${ID}" = "debian" ] || [ "${ID_LIKE}" = "debian" ]; then
+        ADJUSTED_ID="debian"
+    else
+        echo "Linux distro ${ID} not supported."
+        exit 1
+    fi
+fi
+
 scripts=(
   common-utils.sh
   java.sh

@@ -1,4 +1,4 @@
-name: "Release dev container features"
+name: "CD - Release Features"
 on:
   workflow_dispatch:
   push:

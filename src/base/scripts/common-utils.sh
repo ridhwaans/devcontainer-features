@@ -20,41 +20,150 @@ ZSHRCPATH="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
 BASHRCPATH="${BASHRCPATH:-"/etc/bash.bashrc"}"
 SET_THEME="${SETTHEME:-"true"}"
 
-# Ensure apt is in non-interactive to avoid prompts
-export DEBIAN_FRONTEND=noninteractive
+# Mac OS packages
+install_mac_packages() {
+  # Write permissions for Homebrew
+	chown -R root /usr/local/include /usr/local/lib /usr/local/lib/pkgconfig
+	chmod u+w /usr/local/include /usr/local/lib /usr/local/lib/pkgconfig
 
-packages=(
-  ca-certificates
-  curl
-  fontconfig
-  git
-  jq
-  locales
-  screenfetch
-  sudo
-  tig
-  tree
-  tzdata
-  unzip
-  vim
-  zip
-  zsh
-)
+	# Install Homebrew if missing
+	if test ! $(which brew)
+	then
+		echo "Installing Homebrew..."
+		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	fi
 
-# Install the list of packages
-apt update -y
-apt install -y --no-install-recommends "${packages[@]}"
+	# Make sure we’re using the latest Homebrew
+	brew update
 
-# Get to latest versions of all packages
-apt upgrade -y --no-install-recommends
-apt autoremove -y
+	# Upgrade any already-installed formulae
+	brew tap homebrew/core
+	brew upgrade
 
-# Fix character not in range error before shell change
-# https://github.com/ohmyzsh/ohmyzsh/issues/4786
-if ! grep -o -E '^\s*en_US.UTF-8\s+UTF-8' /etc/locale.gen > /dev/null; then
-  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-  locale-gen  
-fi
+	packages=(
+		fontconfig
+		git
+		jq
+    neofetch
+		tig
+		tree
+	)
+	brew install "${packages[@]}"
+
+	# Install Caskroom
+	brew tap homebrew/cask
+	brew tap homebrew/cask-versions
+
+	apps=(
+		beekeeper-studio
+		docker
+		discord
+		dropbox
+		figma
+		hpedrorodrigues/tools/dockutil
+		iterm2-nightly
+		mounty
+		notion
+		postman
+		steam
+		visual-studio-code
+	)
+
+		if [ ! -d "/Applications/Google Chrome.app" ]; then
+				apps+=(google-chrome);
+		fi
+
+		if [ ! -d "/Applications/Slack.app" ]; then
+				apps+=(slack);
+		fi
+
+		if [ ! -d "/Applications/zoom.us.app" ]; then
+				apps+=(zoom);
+		fi
+
+	brew install --cask "${apps[@]}"
+
+	# Remove outdated versions from the cellar
+	brew cleanup
+
+	# Set Dock items
+	OLDIFS=$IFS
+	IFS=''
+
+	apps=(
+		'Google Chrome'
+		'Visual Studio Code'
+		iTerm
+		'Beekeeper Studio'
+		Postman
+		Notion
+		Slack
+		Figma
+		zoom.us
+		Docker
+		'System Settings'
+	)
+
+	dockutil --no-restart --remove all $HOME
+	for app in "${apps[@]}"
+	do
+		echo "Keeping $app in Dock"
+		dockutil --no-restart --add /Applications/$app.app $HOME
+	done
+	killall Dock
+
+	# restore $IFS
+	IFS=$OLDIFS
+}
+
+# Debian / Ubuntu packages
+install_debian_packages() {
+  # Ensure apt is in non-interactive to avoid prompts
+  export DEBIAN_FRONTEND=noninteractive
+
+  packages=(
+    ca-certificates
+    curl
+    fontconfig
+    git
+    jq
+    locales
+    screenfetch
+    sudo
+    tig
+    tree
+    tzdata
+    unzip
+    vim
+    zip
+    zsh
+  )
+
+  # Install the list of packages
+  apt update -y
+  apt install -y --no-install-recommends "${packages[@]}"
+
+  # Get to latest versions of all packages
+  apt upgrade -y --no-install-recommends
+  apt autoremove -y
+
+  # Fix character not in range error before shell change
+  # https://github.com/ohmyzsh/ohmyzsh/issues/4786
+  if ! grep -o -E '^\s*en_US.UTF-8\s+UTF-8' /etc/locale.gen > /dev/null; then
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+    locale-gen  
+  fi
+}
+
+# Install packages for appropriate OS
+case "${ADJUSTED_ID}" in
+    "debian")
+        install_debian_packages
+        ;;
+    "mac")
+        install_mac_packages
+        ;;
+esac
 
 # If in automatic mode, determine if a user already exists, if not use vscode
 if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
@@ -71,32 +180,35 @@ elif [ "${USERNAME}" = "none" ]; then
     USER_UID=0
     USER_GID=0
 fi
-# Create or update a non-root user to match UID/GID.
-if id -u ${USERNAME} > /dev/null 2>&1; then
-    # User exists, update if needed
-    if [ "${USER_GID}" != "automatic" ] && [ "$USER_GID" != "$(id -g $USERNAME)" ]; then
-        group_name="$(id -gn $USERNAME)"
-        groupmod --gid $USER_GID ${group_name}
-        usermod --gid $USER_GID $USERNAME
-    fi
-    if [ "${USER_UID}" != "automatic" ] && [ "$USER_UID" != "$(id -u $USERNAME)" ]; then
-        usermod --uid $USER_UID $USERNAME
-    fi
-else
-    # Create group
-    # Determine if GID provided, if not use vscode
-    if [ "${USER_GID}" = "automatic" ]; then
-        groupadd $USERNAME
-    else
-        groupadd --gid $USER_GID $USERNAME
-    fi
-    # Create user
-    # Determine if UID provided, if not use vscode
-    if [ "${USER_UID}" = "automatic" ]; then
-        useradd -s /bin/bash --gid $USERNAME -m $USERNAME
-    else
-        useradd -s /bin/bash --uid $USER_UID --gid $USERNAME -m $USERNAME
-    fi
+
+if [ "$ADJUSTED_ID" != "mac" ]; then
+  # Create or update a non-root user to match UID/GID.
+  if id -u ${USERNAME} > /dev/null 2>&1; then
+      # User exists, update if needed
+      if [ "${USER_GID}" != "automatic" ] && [ "$USER_GID" != "$(id -g $USERNAME)" ]; then
+          group_name="$(id -gn $USERNAME)"
+          groupmod --gid $USER_GID ${group_name}
+          usermod --gid $USER_GID $USERNAME
+      fi
+      if [ "${USER_UID}" != "automatic" ] && [ "$USER_UID" != "$(id -u $USERNAME)" ]; then
+          usermod --uid $USER_UID $USERNAME
+      fi
+  else
+      # Create group
+      # Determine if GID provided, if not use vscode
+      if [ "${USER_GID}" = "automatic" ]; then
+          groupadd $USERNAME
+      else
+          groupadd --gid $USER_GID $USERNAME
+      fi
+      # Create user
+      # Determine if UID provided, if not use vscode
+      if [ "${USER_UID}" = "automatic" ]; then
+          useradd -s /bin/bash --gid $USERNAME -m $USERNAME
+      else
+          useradd -s /bin/bash --uid $USER_UID --gid $USERNAME -m $USERNAME
+      fi
+  fi
 fi
 
 # Add sudo support for non-root user
@@ -109,6 +221,49 @@ fi
 echo "Set default shell..."
 chsh --shell /bin/zsh ${USERNAME}
 
+if [ "$ADJUSTED_ID" = "mac" ]; then
+  git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
+else
+  if [[ ! -d "$ANTIGEN_DIR" ]]; then
+    # Create antigen group
+    if ! cat /etc/group | grep -e "^antigen:" > /dev/null 2>&1; then
+        groupadd -r antigen
+    fi
+    usermod -a -G antigen ${USERNAME}
+
+    git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
+    chown -R "root:antigen" "${ANTIGEN_DIR}"
+    chmod -R g+rws "${ANTIGEN_DIR}"
+    ln -s ${ANTIGEN_DIR} /etc/skel/.zsh
+  fi
+fi
+
+echo "Installing powerline font for shell prompt..."
+if [ "$ADJUSTED_ID" = "mac" ]; then
+  curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o ~/Library/Fonts/"Roboto Mono for Powerline.ttf"
+  ls /Library/Fonts | grep "Roboto Mono for Powerline.ttf"
+else
+  curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o /usr/share/fonts/"Roboto Mono for Powerline.ttf"
+  fc-cache -f -v
+  fc-list | grep "Roboto Mono for Powerline.ttf"
+fi
+
+if [ "$ADJUSTED_ID" = "mac" ]; then
+  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
+else
+  if [[ ! -d "$VUNDLE_DIR" ]]; then
+    # Create vundle group
+    if ! cat /etc/group | grep -e "^vundle:" > /dev/null 2>&1; then
+        groupadd -r vundle
+    fi
+    usermod -a -G vundle ${USERNAME}
+
+    git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
+    chown -R "root:vundle" "${VUNDLE_DIR}/Vundle.vim"
+    chmod -R g+rws "${VUNDLE_DIR}/Vundle.vim"
+    ln -s ${VUNDLE_DIR}/Vundle.vim /etc/skel/.vim
+  fi
+fi
 
 zsh_rc_snippet=$(cat <<EOF
 # General
@@ -134,24 +289,6 @@ antigen theme agnoster
 antigen apply
 EOF
 )
-
-if [[ ! -d "$ANTIGEN_DIR" ]]; then
-  # Create antigen group
-  if ! cat /etc/group | grep -e "^antigen:" > /dev/null 2>&1; then
-      groupadd -r antigen
-  fi
-  usermod -a -G antigen ${USERNAME}
-
-  git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
-  chown -R "root:antigen" "${ANTIGEN_DIR}"
-  chmod -R g+rws "${ANTIGEN_DIR}"
-  ln -s ${ANTIGEN_DIR} /etc/skel/.zsh
-fi
-
-echo "Installing powerline font..."
-curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o /usr/share/fonts/"Roboto Mono for Powerline.ttf"
-fc-cache -f -v
-fc-list | grep "Roboto Mono for Powerline.ttf"
 
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "zsh" "${zsh_rc_snippet}"
@@ -198,19 +335,6 @@ endtry
 EOF
 )
 
-if [[ ! -d "$VUNDLE_DIR" ]]; then
-  # Create vundle group
-  if ! cat /etc/group | grep -e "^vundle:" > /dev/null 2>&1; then
-      groupadd -r vundle
-  fi
-  usermod -a -G vundle ${USERNAME}
-
-  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
-  chown -R "root:vundle" "${VUNDLE_DIR}/Vundle.vim"
-  chmod -R g+rws "${VUNDLE_DIR}/Vundle.vim"
-  ln -s ${VUNDLE_DIR}/Vundle.vim /etc/skel/.vim
-fi
-
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "vim" "${vim_rc_snippet}" 
   vim +silent! +PluginInstall +qall
@@ -228,3 +352,5 @@ if [ "${SET_THEME}" = "true" ]; then
   sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRCPATH
   command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
 fi
+
+echo "Done!"

@@ -21,20 +21,55 @@ ADDITIONAL_VERSIONS="${PYTHONADDITIONALVERSIONS:-""}"
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 
-# Ensure apt is in non-interactive to avoid prompts
-export DEBIAN_FRONTEND=noninteractive
+# Mac OS packages
+install_mac_packages() {
+    packages=(
+		pyenv
+		pyenv-virtualenv
+	)
+	brew install "${packages[@]}"
+}
 
-# General requirements 
-# https://stackoverflow.com/a/71347968/3577482
-# https://stackoverflow.com/questions/50757647/e-gnupg-gnupg2-and-gnupg1-do-not-seem-to-be-installed-but-one-of-them-is-requ
-# https://github.com/pyenv/pyenv/issues/677
-apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev gnupg patch
+# Debian / Ubuntu packages
+install_debian_packages(){
+    # Ensure apt is in non-interactive to avoid prompts
+    export DEBIAN_FRONTEND=noninteractive
 
-# Create pyenv group to the user's UID or GID to change while still allowing access to pyenv
-if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
-    groupadd -r pyenv
+    # General requirements 
+    # https://stackoverflow.com/a/71347968/3577482
+    # https://stackoverflow.com/questions/50757647/e-gnupg-gnupg2-and-gnupg1-do-not-seem-to-be-installed-but-one-of-them-is-requ
+    # https://github.com/pyenv/pyenv/issues/677
+    apt install -y --no-install-recommends libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc liblzma-dev gnupg patch
+}
+
+# Install packages for appropriate OS
+case "${ADJUSTED_ID}" in
+    "debian")
+        install_debian_packages
+        ;;
+    "mac")
+        install_mac_packages
+        ;;
+esac
+
+if [ "$ADJUSTED_ID" != "mac" ]; then
+    # Create pyenv group to the user's UID or GID to change while still allowing access to pyenv
+    if ! cat /etc/group | grep -e "^pyenv:" > /dev/null 2>&1; then
+        groupadd -r pyenv
+    fi
+    usermod -a -G pyenv ${USERNAME}
+
+    umask 0002
+    if [ ! -d "${PYENV_ROOT}" ]; then
+    git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
+    chown -R "root:pyenv" ${PYENV_ROOT}
+    chmod -R g+rws "${PYENV_ROOT}" 
+
+    git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
+    else
+        echo "pyenv already installed."
+    fi
 fi
-usermod -a -G pyenv ${USERNAME}
 
 pyenv_rc_snippet=$(cat <<EOF
 export PYENV_ROOT="$PYENV_ROOT"
@@ -46,17 +81,6 @@ eval "\$(pyenv init -)"
 eval "\$(pyenv virtualenv-init -)"
 EOF
 )
-
-umask 0002
-if [ ! -d "${PYENV_ROOT}" ]; then
-  git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
-  chown -R "root:pyenv" ${PYENV_ROOT}
-  chmod -R g+rws "${PYENV_ROOT}" 
-
-  git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
-else
-    echo "pyenv already installed."
-fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "zsh" "${pyenv_rc_snippet}"

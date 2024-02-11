@@ -61,26 +61,30 @@ sdk_install() {
     su ${USERNAME} -c "umask 0002 && . ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install ${install_type} ${requested_version} && sdk flush archives && sdk flush temp"
 }
 
+if [ "$ADJUSTED_ID" = "mac" ]; then
+  curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
+else
+    # Install sdkman if not installed
+    if [ ! -d "${SDKMAN_DIR}" ]; then
+        # Create sdkman group, dir, and set sticky bit
+        if ! cat /etc/group | grep -e "^sdkman:" > /dev/null 2>&1; then
+            groupadd -r sdkman
+        fi
+        usermod -a -G sdkman ${USERNAME}
+        umask 0002
+        # Install SDKMAN
+        curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
+        chown -R "root:sdkman" ${SDKMAN_DIR}
+        chmod -R g+rws "${SDKMAN_DIR}"
+    fi
+fi
+
 sdkman_rc_snippet=$(cat <<EOF
 export SDKMAN_DIR="$SDKMAN_DIR"
 
 [[ -s "\$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "\$SDKMAN_DIR/bin/sdkman-init.sh"
 EOF
 )
-
-# Install sdkman if not installed
-if [ ! -d "${SDKMAN_DIR}" ]; then
-    # Create sdkman group, dir, and set sticky bit
-    if ! cat /etc/group | grep -e "^sdkman:" > /dev/null 2>&1; then
-        groupadd -r sdkman
-    fi
-    usermod -a -G sdkman ${USERNAME}
-    umask 0002
-    # Install SDKMAN
-    curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
-    chown -R "root:sdkman" ${SDKMAN_DIR}
-    chmod -R g+rws "${SDKMAN_DIR}"
-fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "zsh" "${sdkman_rc_snippet}"

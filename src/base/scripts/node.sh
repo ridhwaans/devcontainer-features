@@ -21,11 +21,25 @@ ADDITIONAL_VERSIONS="${NODEADDITIONALVERSIONS:-""}"
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 
-# Create nvm group to the user's UID or GID to change while still allowing access to nvm
-if ! cat /etc/group | grep -e "^nvm:" > /dev/null 2>&1; then
-    groupadd -r nvm
+if [ "$ADJUSTED_ID" = "mac" ]; then
+    git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
+else
+    # Create nvm group to the user's UID or GID to change while still allowing access to nvm
+    if ! cat /etc/group | grep -e "^nvm:" > /dev/null 2>&1; then
+        groupadd -r nvm
+    fi
+    usermod -a -G nvm ${USERNAME}
+
+    umask 0002
+    if [ ! -d "${NVM_DIR}" ]; then
+        git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
+        chown -R "root:nvm" "${NVM_DIR}"
+        chmod -R g+rws "${NVM_DIR}"
+        source ${NVM_DIR}/nvm.sh
+    else
+        echo "nvm already installed."
+    fi
 fi
-usermod -a -G nvm ${USERNAME}
 
 # Adjust node version if required
 if [ "${NODE_VERSION}" = "none" ]; then
@@ -41,16 +55,6 @@ export NVM_DIR="${NVM_DIR}"
 [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
 EOF
 )
-
-umask 0002
-if [ ! -d "${NVM_DIR}" ]; then
-    git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
-    chown -R "root:nvm" "${NVM_DIR}"
-    chmod -R g+rws "${NVM_DIR}"
-    source ${NVM_DIR}/nvm.sh
-else
-    echo "nvm already installed."
-fi
 
 if [ "${UPDATE_RC}" = "true" ]; then
     updaterc "zsh" "${nvm_rc_snippet}"
