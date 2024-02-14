@@ -7,14 +7,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-GO_VERSION="${GOVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-GO_DIR="${GOINSTALLPATH:-"/usr/local/go"}"
-GO_PATH="${GOPATH:-"/go"}"
-
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 

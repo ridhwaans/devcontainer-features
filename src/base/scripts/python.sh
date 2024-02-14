@@ -7,16 +7,11 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-PYTHON_VERSION="${PYTHONVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-export PYENV_ROOT="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
+export PYENV_ROOT="${PYENV_INSTALL_PATH:-"/usr/local/pyenv"}"
 
 # Comma-separated list of python versions to be installed
 # alongside PYTHON_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${PYTHONADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${PYTHON_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)

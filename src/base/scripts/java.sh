@@ -7,20 +7,11 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-JAVA_VERSION="${JAVAVERSION:-"lts"}"
-INSTALL_GRADLE="${INSTALLGRADLE:-"false"}"
-GRADLE_VERSION="${GRADLEVERSION:-"latest"}"
-INSTALL_MAVEN="${INSTALLMAVEN:-"false"}"
-MAVEN_VERSION="${MAVENVERSION:-"latest"}"
-export SDKMAN_DIR="${SDKMANINSTALLPATH:-"/usr/local/sdkman"}"
+export SDKMAN_DIR="${SDKMAN_INSTALL_PATH:-"/usr/local/sdkman"}"
 
 # Comma-separated list of java versions to be installed
 # alongside JAVA_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${JAVAADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${JAVA_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)

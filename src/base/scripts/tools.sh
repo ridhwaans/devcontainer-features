@@ -7,12 +7,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-EXERCISM_VERSION="${EXERCISMVERSION:-"latest"}"
-TERRAFORM_VERSION="${TERRAFORMVERSION:-"latest"}"
-
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
 

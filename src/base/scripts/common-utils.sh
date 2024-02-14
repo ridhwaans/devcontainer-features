@@ -7,19 +7,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"automatic"}"
-USER_UID="${USERUID:-"automatic"}"
-USER_GID="${USERGID:-"automatic"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-VUNDLE_DIR="${VUNDLEDIR:-"/usr/local/share/.vim/bundle"}"
-VIMRCPATH="${VIMRCPATH:-"/etc/vim/vimrc"}"
-ANTIGEN_DIR="${ANTIGENDIR:-"/usr/local/share/.zsh/bundle"}"
-ZSHRCPATH="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
-BASHRCPATH="${BASHRCPATH:-"/etc/bash.bashrc"}"
-SET_THEME="${SETTHEME:-"true"}"
-
 # Mac OS packages
 install_mac_packages() {
   # Write permissions for Homebrew
@@ -343,13 +330,13 @@ fi
 if [ "${SET_THEME}" = "true" ]; then
   echo "Setting theme..."
   colorscheme="Plugin 'whatyouhide/vim-gotham'"
-  if ! grep -qF "$colorscheme" $VIMRCPATH; then
-    sed -i "/Plugin 'VundleVim\/Vundle.vim'/a $colorscheme" $VIMRCPATH
+  if ! grep -qF "$colorscheme" $VIMRC_PATH; then
+    sed -i "/Plugin 'VundleVim\/Vundle.vim'/a $colorscheme" $VIMRC_PATH
     vim +silent! +PluginInstall +qall
   fi
-  sed -i '/try/{n;s/.*/colorscheme gotham256/;}' $VIMRCPATH
+  sed -i '/try/{n;s/.*/colorscheme gotham256/;}' $VIMRC_PATH
 
-  sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRCPATH
+  sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRC_PATH
   command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
 fi
 

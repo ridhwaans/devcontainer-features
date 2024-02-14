@@ -7,53 +7,18 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-USERNAME="${USERNAME:-"automatic"}"
-USER_UID="${USERUID:-"automatic"}"
-USER_GID="${USERGID:-"automatic"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-VUNDLE_DIR="${VUNDLEDIR:-"/usr/local/share/.vim/bundle"}"
-VIMRCPATH="${VIMRCPATH:-"/etc/vim/vimrc"}"
-ANTIGEN_DIR="${ANTIGENDIR:-"/usr/local/share/.zsh/bundle"}"
-ZSHRCPATH="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
-BASHRCPATH="${BASHRCPATH:-"/etc/bash.bashrc"}"
-SET_THEME="${SETTHEME:-"true"}"
-
-JAVAVERSION="${JAVAVERSION:-"lts"}"
-INSTALLGRADLE="${INSTALLGRADLE:-"false"}"
-GRADLEVERSION="${GRADLEVERSION:-"latest"}"
-INSTALLMAVEN="${INSTALLMAVEN:-"false"}"
-MAVENVERSION="${MAVENVERSION:-"latest"}"
-SDKMANINSTALLPATH="${SDKMANINSTALLPATH:-"/usr/local/sdkman"}"
-JAVAADDITIONALVERSIONS="${JAVAADDITIONALVERSIONS:-""}"
-
-PYTHONVERSION="${PYTHONVERSION:-"latest"}"
-PYENVINSTALLPATH="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
-PYTHONADDITIONALVERSIONS="${PYTHONADDITIONALVERSIONS:-""}"
-
-RUBYVERSION="${RUBYVERSION:-"latest"}"
-RBENVINSTALLPATH="${RBENVINSTALLPATH:-"/usr/local/rbenv"}"
-RUBYADDITIONALVERSIONS="${RUBYADDITIONALVERSIONS:-""}"
-
-NODEVERSION="${NODEVERSION:-"latest"}"
-NVMINSTALLPATH="${NVMINSTALLPATH:-"/usr/local/nvm"}"
-NODEADDITIONALVERSIONS="${NODEADDITIONALVERSIONS:-""}"
-
-GOVERSION="${GOVERSION:-"latest"}"
-GOINSTALLPATH="${GOINSTALLPATH:-"/usr/local/go"}"
-GOPATH="${GOPATH:-"/go"}"
-
-EXERCISMVERSION="${EXERCISMVERSION:-"latest"}"
-TERRAFORMVERSION="${TERRAFORMVERSION:-"latest"}"
+source $(dirname $0)/scripts/_config.sh
+source $(dirname $0)/scripts/_helper.sh
 
 if [ $(uname) = Darwin ]; then
-    ADJUSTED_ID="mac"
+    export ADJUSTED_ID="mac"
 elif [ $(uname) = Linux ]; then
     # Bring in ID, ID_LIKE, VERSION_ID, VERSION_CODENAME
     . /etc/os-release
 
     # Get an adjusted ID independent of distro variants
     if [ "${ID}" = "debian" ] || [ "${ID_LIKE}" = "debian" ]; then
-        ADJUSTED_ID="debian"
+        export ADJUSTED_ID="debian"
     else
         echo "Linux distro ${ID} not supported."
         exit 1
@@ -69,8 +34,8 @@ scripts=(
   go.sh
   tools.sh
 )
-script_dir="$(dirname "$0")/scripts"
 
+script_dir="$(dirname "$0")/scripts"
 script_count=${#scripts[@]}
 current_script=1
 

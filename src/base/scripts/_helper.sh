@@ -1,9 +1,9 @@
 #!/bin/bash
 
 declare -A rc_paths=(
-  [vim]="${VIMRCPATH:-"/etc/vim/vimrc"}"
-  [bash]="${BASHRCPATH:-"/etc/bash.bashrc"}"
-  [zsh]="${ZSHRCPATH:-"/etc/zsh/zshrc"}"
+  [vim]="${VIMRC_PATH:-"/etc/vim/vimrc"}"
+  [bash]="${BASHRC_PATH:-"/etc/bash.bashrc"}"
+  [zsh]="${ZSHRC_PATH:-"/etc/zsh/zshrc"}"
 )
 
 updaterc() {
@@ -82,3 +82,7 @@ find_version_from_git_tags() {
     fi
     echo "${variable_name}=${!variable_name}"
 }
+
+export -f updaterc
+export -f get_non_root_user
+export -f find_version_from_git_tags

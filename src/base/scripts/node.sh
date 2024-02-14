@@ -7,16 +7,11 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-source $(dirname $0)/_helper.sh
-
-USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-UPDATE_RC="${UPDATERC:-"true"}"
-NODE_VERSION="${NODEVERSION:-"latest"}" # 'system' or 'os-provided' checks the base image first, else installs 'latest'
-export NVM_DIR="${NVMINSTALLPATH:-"/usr/local/nvm"}"
+export NVM_DIR="${NVM_INSTALL_PATH:-"/usr/local/nvm"}"
 
 # Comma-separated list of node versions to be installed
 # alongside NODE_VERSION, but not set as default.
-ADDITIONAL_VERSIONS="${NODEADDITIONALVERSIONS:-""}"
+ADDITIONAL_VERSIONS="${NODE_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
 USERNAME=$(get_non_root_user $USERNAME)
