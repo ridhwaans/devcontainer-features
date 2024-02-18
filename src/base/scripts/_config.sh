@@ -1,3 +1,5 @@
+# Export all variables and make them available to child processes & scripts invoked from within main script
+
 export USERNAME="${USERNAME:-"automatic"}"
 export USER_UID="${USERUID:-"automatic"}"
 export USER_GID="${USERGID:-"automatic"}"

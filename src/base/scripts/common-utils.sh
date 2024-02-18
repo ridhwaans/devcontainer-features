@@ -49,6 +49,7 @@ install_mac_packages() {
 		figma
 		hpedrorodrigues/tools/dockutil
 		iterm2-nightly
+    kap
 		mounty
 		notion
 		postman
@@ -115,13 +116,14 @@ install_debian_packages() {
     git
     jq
     locales
-    screenfetch
+    neofetch
     sudo
     tig
     tree
     tzdata
     unzip
     vim
+    wget
     zip
     zsh
   )
@@ -138,7 +140,7 @@ install_debian_packages() {
   # https://github.com/ohmyzsh/ohmyzsh/issues/4786
   if ! grep -o -E '^\s*en_US.UTF-8\s+UTF-8' /etc/locale.gen > /dev/null; then
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-    locale-gen  
+    locale-gen
   fi
 }
 
@@ -323,7 +325,7 @@ EOF
 )
 
 if [ "${UPDATE_RC}" = "true" ]; then
-  updaterc "vim" "${vim_rc_snippet}" 
+  updaterc "vim" "${vim_rc_snippet}"
   vim +silent! +PluginInstall +qall
 fi
 

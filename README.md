@@ -35,7 +35,7 @@ in VS Code, select `Dev Containers: Reopen in Container`, or
 ### global scenarios
 > devcontainer features test --global-scenarios-only
 
-## publish
+## release
  
 | runner image                                     |
 |--------------------------------------------------|
