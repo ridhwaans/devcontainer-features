@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -6,9 +6,6 @@ if [ "$(id -u)" -ne 0 ]; then
   echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
   exit 1
 fi
-
-source $(dirname $0)/scripts/_config.sh
-source $(dirname $0)/scripts/_helper.sh
 
 if [ $(uname) = Darwin ]; then
     export ADJUSTED_ID="mac"
@@ -25,6 +22,9 @@ elif [ $(uname) = Linux ]; then
     fi
 fi
 
+source $(dirname $0)/scripts/_config.sh
+source $(dirname $0)/scripts/_helper.sh
+
 scripts=(
   common-utils.sh
   java.sh
@@ -40,7 +40,7 @@ script_count=${#scripts[@]}
 current_script=1
 
 for script in "${scripts[@]}"; do
-    /bin/bash "$script_dir/$script" "$@"
+    $(which bash) "$script_dir/$script" "$@"
 
     script_status=$?
 

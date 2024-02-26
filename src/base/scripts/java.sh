@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -7,14 +7,14 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-export SDKMAN_DIR="${SDKMAN_INSTALL_PATH:-"/usr/local/sdkman"}"
+export SDKMAN_DIR="${SDKMAN_PATH}"
 
 # Comma-separated list of java versions to be installed
 # alongside JAVA_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${JAVA_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
+USERNAME=$(get_target_user $USERNAME)
 
 # Use SDKMAN to install something using a partial version match
 sdk_install() {
@@ -52,9 +52,7 @@ sdk_install() {
     su ${USERNAME} -c "umask 0002 && . ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install ${install_type} ${requested_version} && sdk flush archives && sdk flush temp"
 }
 
-if [ "$ADJUSTED_ID" = "mac" ]; then
-  curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
-else
+if [ "$ADJUSTED_ID" != "mac" ]; then
     # Install sdkman if not installed
     if [ ! -d "${SDKMAN_DIR}" ]; then
         # Create sdkman group, dir, and set sticky bit

@@ -1,40 +1,37 @@
-#!/bin/bash
-
-declare -A rc_paths=(
-  [vim]="${VIMRC_PATH:-"/etc/vim/vimrc"}"
-  [bash]="${BASHRC_PATH:-"/etc/bash.bashrc"}"
-  [zsh]="${ZSHRC_PATH:-"/etc/zsh/zshrc"}"
-)
+#!/usr/bin/env bash
 
 updaterc() {
-  get_rc_path() {
-    local key=$1
-    echo "${rc_paths[$key]}"
-  }
+  declare -A rc_paths=(
+    [vim]="$(eval echo "~$USERNAME")/.vimrc"
+    [bash]="$(eval echo "~$USERNAME")/.bashrc"
+    [zsh]="$(eval echo "~$USERNAME")/.zshrc"
+  )
+  local rc_key=$1
+  local rc_content=$2
 
-  update_file() {
-    local file_path=$1
-    local text_to_add=$2
-    
-    if [ -f "$file_path" ] && [[ $(cat "$file_path") != *"$text_to_add"* ]]; then
-      echo "Updating $file_path..."
-      echo -e "$text_to_add" >> "$file_path"
-    fi
-  }
+  rc_path="${rc_paths[$rc_key]}"
+  rc_dir=$(dirname "$rc_path")
+  [ ! -d "$rc_dir" ] && mkdir -p "$rc_dir"
+  [ ! -f "$rc_path" ] && touch "$rc_path"
 
-  local param=$1
-  local update_value=$2
-
-  local rc_path=$(get_rc_path "$param")
-  update_file "$rc_path" "$update_value"
+  if [[ "$(cat $rc_path)" = *"$rc_content"* ]]; then
+    echo "Content already exists in $rc_path"
+  else
+    echo "Updating $rc_path..."
+    echo -e "$rc_content" >> "$rc_path"
+  fi
 }
 
-get_non_root_user() {
+get_target_user() {
   local USERNAME
 
   if [ "${1}" = "auto" ] || [ "${1}" = "automatic" ]; then
     USERNAME=""
-    FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
+    if [ "$ADJUSTED_ID" = "mac" ]; then
+      FIRST_USER=$(dscl . -list /Users UniqueID | awk -v val=501 '$2 == val {print $1}')
+    else
+      FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
+    fi
     if id -u ${FIRST_USER} > /dev/null 2>&1; then
       USERNAME=${FIRST_USER}
     fi
@@ -46,6 +43,19 @@ get_non_root_user() {
   fi
 
   echo "${USERNAME}"
+}
+
+run_brew_command_as_target_user() {
+    sudo -u $USERNAME brew "$@"
+}
+
+conditional_grep() {
+    # use gnu grep for pcre, not bsd grep
+    if [ "$ADJUSTED_ID" = "mac" ]; then
+        ggrep "$@"
+    else
+        grep "$@"
+    fi
 }
 
 # Figure out correct version of a three part version number is not passed
@@ -67,16 +77,16 @@ find_version_from_git_tags() {
             last_part="${escaped_separator}[0-9]+"
         fi
         local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
-        local version_list="$(git ls-remote --tags ${repository} | grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
+        local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
         if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
             declare -g ${variable_name}="$(echo "${version_list}" | head -n 1)"
         else
             set +e
-            declare -g ${variable_name}="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            declare -g ${variable_name}="$(echo "${version_list}" | conditional_grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
             set -e
         fi
     fi
-    if [ -z "${!variable_name}" ] || ! echo "${version_list}" | grep "^${!variable_name//./\\.}$" > /dev/null 2>&1; then
+    if [ -z "${!variable_name}" ] || ! echo "${version_list}" | conditional_grep "^${!variable_name//./\\.}$" > /dev/null 2>&1; then
         echo -e "Invalid ${variable_name} value: ${requested_version}\nValid values:\n${version_list}" >&2
         exit 1
     fi
@@ -84,5 +94,7 @@ find_version_from_git_tags() {
 }
 
 export -f updaterc
-export -f get_non_root_user
+export -f get_target_user
 export -f find_version_from_git_tags
+export -f run_brew_command_as_target_user
+export -f conditional_grep

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -8,13 +8,13 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
+USERNAME=$(get_target_user $USERNAME)
 
 if [ "$ADJUSTED_ID" = "mac" ]; then
     packages=(
       go
     )
-    brew install "${packages[@]}"
+    run_brew_command_as_target_user install "${packages[@]}"
 else
   # Verify requested version is available, convert latest
   find_version_from_git_tags GO_VERSION "https://go.googlesource.com/go" "tags/go" "." "true"

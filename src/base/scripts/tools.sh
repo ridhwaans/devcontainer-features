@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -8,13 +8,12 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
-
+USERNAME=$(get_target_user $USERNAME)
 
 if [ "$ADJUSTED_ID" = "mac" ]; then
-  brew tap aws/tap
-  brew tap hashicorp/tap
-  brew upgrade
+  run_brew_command_as_target_user tap aws/tap
+  run_brew_command_as_target_user tap hashicorp/tap
+  run_brew_command_as_target_user upgrade
 
   packages=(
 		awscli
@@ -24,7 +23,7 @@ if [ "$ADJUSTED_ID" = "mac" ]; then
     gh
     hashicorp/tap/terraform
 	)
-	brew install "${packages[@]}"
+	run_brew_command_as_target_user install "${packages[@]}"
 else
   # Install gh-cli
   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -63,7 +62,7 @@ else
   fi
 
   # Install cfn-lint
-  export PYENV_ROOT="${PYENVINSTALLPATH:-"/usr/local/pyenv"}"
+  export PYENV_ROOT="${PYENV_PATH}"
   su ${USERNAME} -c "export PYENV_ROOT=${PYENV_ROOT}; export PATH=$PYENV_ROOT/bin:\$PATH; pyenv exec pip install -U cfn-lint"
 
   # Install terraform

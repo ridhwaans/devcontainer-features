@@ -32,19 +32,19 @@ A devcontainer feature
 | gradleVersion            | Gradle Version                                    | string  | latest                          |
 | installMaven             | Install Maven                                     | boolean | false                           |
 | mavenVersion             | Maven Version                                     | string  | latest                          |
-| sdkmanInstallPath        | SDKMAN Install Path                               | string  | /usr/local/sdkman               |
+| sdkmanPath        | SDKMAN Install Path                               | string  | /usr/local/sdkman               |
 | javaAdditionalVersions   | Additional Java Versions                          | string  | "" (empty string)                |
 | pythonVersion            | Python Version                                    | string  | latest                          |
-| pyenvInstallPath         | Pyenv Install Path                                | string  | /usr/local/pyenv                |
+| pyenvPath         | Pyenv Install Path                                | string  | /usr/local/pyenv                |
 | pythonAdditionalVersions | Additional Python Versions                        | string  | "" (empty string)                |
 | rubyVersion              | Ruby Version                                      | string  | latest                          |
-| rbenvInstallPath         | Rbenv Install Path                                | string  | /usr/local/rbenv                |
+| rbenvPath         | Rbenv Install Path                                | string  | /usr/local/rbenv                |
 | rubyAdditionalVersions   | Additional Ruby Versions                          | string  | "" (empty string)                |
 | nodeVersion              | Node.js Version                                   | string  | latest                          |
-| nvmInstallPath           | NVM Install Path                                  | string  | /usr/local/nvm                  |
+| nvmPath           | NVM Install Path                                  | string  | /usr/local/nvm                  |
 | nodeAdditionalVersions   | Additional Node.js Versions                       | string  | "" (empty string)                |
 | goVersion                | Go Version                                        | string  | latest                          |
-| goInstallPath            | Go Install Path                                   | string  | /usr/local/go                   |
+| goDir            | Go Install Path                                   | string  | /usr/local/go                   |
 | goPath                   | Go Path                                           | string  | /go                             |
 | exercismVersion          | Exercism Version                                  | string  | latest                          |
 | terraformVersion         | Terraform Version                                 | string  | latest                          |

@@ -50,15 +50,15 @@
         "default": "/etc/bash.bashrc",
         "description": "Path to the bashrc file"
       },
-      "vundleDir": {
+      "vimplugPath": {
         "type": "string",
-        "default": "/usr/local/share/.vim/bundle/Vundle.vim",
-        "description": "Vundle Install Path"
+        "default": "/usr/local/share/.vim/bundle",
+        "description": "Vim Plugin Manager Install Path"
       },
-      "antigenDir": {
+      "zshplugPath": {
         "type": "string",
         "default": "/usr/local/share/.zsh/bundle",
-        "description": "Antigen Install Path"
+        "description": "Zsh Plugin Manager Install Path"
       },
       "javaVersion": {
         "type": "string",
@@ -85,7 +85,7 @@
         "default": "latest",
         "description": "Maven Version"
       },
-      "sdkmanInstallPath": {
+      "sdkmanPath": {
         "type": "string",
         "default": "/usr/local/sdkman",
         "description": "SDKMAN Install Path"
@@ -100,7 +100,7 @@
         "default": "latest",
         "description": "Python Version"
       },
-      "pyenvInstallPath": {
+      "pyenvPath": {
         "type": "string",
         "default": "/usr/local/pyenv",
         "description": "Pyenv Install Path"
@@ -115,7 +115,7 @@
         "default": "latest",
         "description": "Ruby Version"
       },
-      "rbenvInstallPath": {
+      "rbenvPath": {
         "type": "string",
         "default": "/usr/local/rbenv",
         "description": "Rbenv Install Path"
@@ -130,7 +130,7 @@
         "default": "latest",
         "description": "Node.js Version"
       },
-      "nvmInstallPath": {
+      "nvmPath": {
         "type": "string",
         "default": "/usr/local/nvm",
         "description": "NVM Install Path"
@@ -145,7 +145,7 @@
         "default": "latest",
         "description": "Go Version"
       },
-      "goInstallPath": {
+      "goDir": {
         "type": "string",
         "default": "/usr/local/go",
         "description": "Go Install Path"

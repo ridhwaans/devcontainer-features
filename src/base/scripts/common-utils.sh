@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -9,70 +9,68 @@ fi
 
 # Mac OS packages
 install_mac_packages() {
-  # Write permissions for Homebrew
-	chown -R root /usr/local/include /usr/local/lib /usr/local/lib/pkgconfig
-	chmod u+w /usr/local/include /usr/local/lib /usr/local/lib/pkgconfig
+  if ! command -v xcode-select &>/dev/null; then
+    echo "Installing Command Line Tools..."
+    xcode-select --install
+  fi
 
-	# Install Homebrew if missing
-	if test ! $(which brew)
-	then
+	if ! command -v brew &> /dev/null; then
 		echo "Installing Homebrew..."
 		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	fi
 
-	# Make sure we’re using the latest Homebrew
-	brew update
+# Make sure we’re using the latest Homebrew
+run_brew_command_as_target_user update
 
-	# Upgrade any already-installed formulae
-	brew tap homebrew/core
-	brew upgrade
+# Upgrade any already-installed formulae
+run_brew_command_as_target_user upgrade
 
-	packages=(
-		fontconfig
-		git
-		jq
+packages=(
+    dockutil
+    fontconfig
+    git
+    grep
+    jq
     neofetch
-		tig
-		tree
-	)
-	brew install "${packages[@]}"
+    tig
+    tree
+)
+run_brew_command_as_target_user install "${packages[@]}"
 
-	# Install Caskroom
-	brew tap homebrew/cask
-	brew tap homebrew/cask-versions
+# Install Caskroom
+run_brew_command_as_target_user tap homebrew/cask-versions
 
-	apps=(
-		beekeeper-studio
-		docker
-		discord
-		dropbox
-		figma
-		hpedrorodrigues/tools/dockutil
-		iterm2-nightly
+apps=(
+    beekeeper-studio
+    docker
+    discord
+    dropbox
+    figma
+    iterm2-nightly
     kap
-		mounty
-		notion
-		postman
-		steam
-		visual-studio-code
-	)
+    mounty
+    notion
+    postman
+    steam
+    visual-studio-code
+)
 
-		if [ ! -d "/Applications/Google Chrome.app" ]; then
-				apps+=(google-chrome);
-		fi
+if [ ! -d "/Applications/Google Chrome.app" ]; then
+    apps+=(google-chrome)
+fi
 
-		if [ ! -d "/Applications/Slack.app" ]; then
-				apps+=(slack);
-		fi
+if [ ! -d "/Applications/Slack.app" ]; then
+    apps+=(slack)
+fi
 
-		if [ ! -d "/Applications/zoom.us.app" ]; then
-				apps+=(zoom);
-		fi
+if [ ! -d "/Applications/zoom.us.app" ]; then
+    apps+=(zoom)
+fi
 
-	brew install --cask "${apps[@]}"
+run_brew_command_as_target_user install --cask "${apps[@]}"
 
-	# Remove outdated versions from the cellar
-	brew cleanup
+# Remove outdated versions from the cellar
+run_brew_command_as_target_user cleanup
 
 	# Set Dock items
 	OLDIFS=$IFS
@@ -144,20 +142,14 @@ install_debian_packages() {
   fi
 }
 
-# Install packages for appropriate OS
-case "${ADJUSTED_ID}" in
-    "debian")
-        install_debian_packages
-        ;;
-    "mac")
-        install_mac_packages
-        ;;
-esac
-
 # If in automatic mode, determine if a user already exists, if not use vscode
 if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
   USERNAME=""
-  FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
+  if [ "$ADJUSTED_ID" = "mac" ]; then
+    FIRST_USER=$(dscl . -list /Users UniqueID | awk -v val=501 '$2 == val {print $1}')
+  else
+    FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
+  fi
   if id -u ${FIRST_USER} > /dev/null 2>&1; then
     USERNAME=${FIRST_USER}
   fi
@@ -170,7 +162,9 @@ elif [ "${USERNAME}" = "none" ]; then
     USER_GID=0
 fi
 
-if [ "$ADJUSTED_ID" != "mac" ]; then
+if [ "$ADJUSTED_ID" = "mac" ]; then
+  dseditgroup -o edit -a $USERNAME -t user wheel
+else
   # Create or update a non-root user to match UID/GID.
   if id -u ${USERNAME} > /dev/null 2>&1; then
       # User exists, update if needed
@@ -207,29 +201,27 @@ if [ "${USERNAME}" != "root" ]; then
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
 
-echo "Set default shell..."
-chsh --shell /bin/zsh ${USERNAME}
-
+# Set default shell
+chsh -s /bin/zsh ${USERNAME}
 if [ "$ADJUSTED_ID" = "mac" ]; then
-  git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
+  echo $SHELL
 else
-  if [[ ! -d "$ANTIGEN_DIR" ]]; then
-    # Create antigen group
-    if ! cat /etc/group | grep -e "^antigen:" > /dev/null 2>&1; then
-        groupadd -r antigen
-    fi
-    usermod -a -G antigen ${USERNAME}
-
-    git clone https://github.com/zsh-users/antigen.git ${ANTIGEN_DIR}
-    chown -R "root:antigen" "${ANTIGEN_DIR}"
-    chmod -R g+rws "${ANTIGEN_DIR}"
-    ln -s ${ANTIGEN_DIR} /etc/skel/.zsh
-  fi
+  grep "^${USERNAME}:" /etc/passwd | cut -d: -f7
 fi
 
-echo "Installing powerline font for shell prompt..."
+# Install packages for appropriate OS
+case "${ADJUSTED_ID}" in
+    "debian")
+        install_debian_packages
+        ;;
+    "mac")
+        install_mac_packages
+        ;;
+esac
+
+echo "Installing system-wide powerline font for shell prompt..."
 if [ "$ADJUSTED_ID" = "mac" ]; then
-  curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o ~/Library/Fonts/"Roboto Mono for Powerline.ttf"
+  curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o /Library/Fonts/"Roboto Mono for Powerline.ttf"
   ls /Library/Fonts | grep "Roboto Mono for Powerline.ttf"
 else
   curl -L https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf --create-dirs -o /usr/share/fonts/"Roboto Mono for Powerline.ttf"
@@ -237,45 +229,44 @@ else
   fc-list | grep "Roboto Mono for Powerline.ttf"
 fi
 
-if [ "$ADJUSTED_ID" = "mac" ]; then
-  git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
-else
-  if [[ ! -d "$VUNDLE_DIR" ]]; then
-    # Create vundle group
-    if ! cat /etc/group | grep -e "^vundle:" > /dev/null 2>&1; then
-        groupadd -r vundle
-    fi
-    usermod -a -G vundle ${USERNAME}
-
-    git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}/Vundle.vim
-    chown -R "root:vundle" "${VUNDLE_DIR}/Vundle.vim"
-    chmod -R g+rws "${VUNDLE_DIR}/Vundle.vim"
-    ln -s ${VUNDLE_DIR}/Vundle.vim /etc/skel/.vim
+[ ! -d ${ZSHPLUG_PATH} ] && git clone https://github.com/zplug/zplug ${ZSHPLUG_PATH}
+if [ "$ADJUSTED_ID" != "mac" ]; then
+  # Create group
+  if ! cat /etc/group | grep -e "^zplug:" > /dev/null 2>&1; then
+      groupadd -r zplug
   fi
+  usermod -a -G zplug ${USERNAME}
+  umask 002
+  chown -R "root:zplug" "$(dirname $ZSHPLUG_PATH)"
+  chmod -R g+rws "$(dirname $ZSHPLUG_PATH)" 
+fi
+
+curl -fLo "${VIMPLUG_PATH}/autoload/plug.vim" --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+if [ "$ADJUSTED_ID" != "mac" ]; then
+  # Create group
+  if ! cat /etc/group | grep -e "^vimplug:" > /dev/null 2>&1; then
+      groupadd -r vimplug
+  fi
+  usermod -a -G vimplug ${USERNAME}
+  chown -R "root:vimplug" "$(dirname $VIMPLUG_PATH)"
+  chmod -R g+rX "$(dirname $VIMPLUG_PATH)" 
 fi
 
 zsh_rc_snippet=$(cat <<EOF
-# General
-ADOTDIR="$ANTIGEN_DIR"
-ANTIGEN_LOG=\${ADOTDIR}/antigen.log
+export ZPLUG_HOME="$ZSHPLUG_PATH"
+source \$ZPLUG_HOME/init.zsh
 
-# Customization
-ANTIGEN_CACHE=\${ADOTDIR}/init.zsh
-ANTIGEN_COMPDUMP=\${ADOTDIR}/.zcompdump
-ANTIGEN_BUNDLES=\${ADOTDIR}/bundles
-ANTIGEN_LOCK=\${ADOTDIR}/.lock
-ANTIGEN_DEBUG_LOG=\${ADOTDIR}/debug.log
+zplug "agnoster/3712874", from:gist, as:theme, use:agnoster.zsh-theme
 
-source \${ADOTDIR}/bin/antigen.zsh
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
 
-# Load the oh-my-zsh's library.
-antigen use oh-my-zsh
-
-# Load the theme.
-antigen theme agnoster
-
-# Tell Antigen that you're done.
-antigen apply
+zplug load --verbose
 EOF
 )
 
@@ -284,62 +275,17 @@ if [ "${UPDATE_RC}" = "true" ]; then
 fi
 
 vim_rc_snippet=$(cat <<EOF
-set nocompatible              " be iMproved, required
-filetype off                  " required
+let g:vim_plug_home = '/usr/local/share/.vim/bundle'
 
-" set the runtime path to include Vundle and initialize
-set rtp+=$VUNDLE_DIR/Vundle.vim
-call vundle#begin('$VUNDLE_DIR')
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
-" plugin on GitHub repo
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
-try
-  colorscheme default
-catch /^Vim\%((\a\+)\)\=:E185/
-  colorscheme default
-  set background=dark
-endtry
+execute 'source ' . g:vim_plug_home . '/autoload/plug.vim'
+call plug#begin(g:vim_plug_home . '/plugged')
+call plug#end()
 EOF
 )
 
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "vim" "${vim_rc_snippet}"
-  vim +silent! +PluginInstall +qall
-fi
-
-if [ "${SET_THEME}" = "true" ]; then
-  echo "Setting theme..."
-  colorscheme="Plugin 'whatyouhide/vim-gotham'"
-  if ! grep -qF "$colorscheme" $VIMRC_PATH; then
-    sed -i "/Plugin 'VundleVim\/Vundle.vim'/a $colorscheme" $VIMRC_PATH
-    vim +silent! +PluginInstall +qall
-  fi
-  sed -i '/try/{n;s/.*/colorscheme gotham256/;}' $VIMRC_PATH
-
-  sed -i '/^antigen theme/s/.*/antigen theme agnoster/' $ZSHRC_PATH
-  command -v code >/dev/null 2>&1 && code --install-extension alireza94.theme-gotham || echo "vscode not found. Please install vscode to use this script."
+  vim +silent! +PlugInstall +qall
 fi
 
 echo "Done!"

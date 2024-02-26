@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -7,14 +7,14 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-export RBENV_ROOT="${RBENV_INSTALL_PATH:-"/usr/local/rbenv"}"
+export RBENV_ROOT="${RBENV_PATH}"
 
 # Comma-separated list of ruby versions to be installed
 # alongside RUBY_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${RUBY_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
+USERNAME=$(get_target_user $USERNAME)
 
 # Mac OS packages
 install_mac_packages() {
@@ -23,7 +23,11 @@ install_mac_packages() {
 		ruby-build
         rbenv-gemset
 	)
-	brew install "${packages[@]}"
+	run_brew_command_as_target_user install "${packages[@]}"
+    # [ ! -e $RBENV_ROOT ] && ln -s $(brew --prefix rbenv) $RBENV_ROOT
+    # [ ! -d "$RBENV_ROOT/plugins" ] && mkdir -p "$RBENV_ROOT/plugins"
+    # [ ! -e "$RBENV_ROOT/plugins/ruby-build" ] && ln -s $(brew --prefix ruby-build) $RBENV_ROOT/plugins/ruby-build
+    # [ ! -e "$RBENV_ROOT/plugins/rbenv-gemset" ] && ln -s $(brew --prefix rbenv-gemset) $RBENV_ROOT/plugins/rbenv-gemset
 }
 
 # Debian / Ubuntu packages
@@ -63,16 +67,11 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     fi
 
     umask 0002
-    if [ ! -d "${RBENV_ROOT}" ]; then
-    git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
+    [ ! -d ${RBENV_ROOT} ] && git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
     chown -R "root:rbenv" ${RBENV_ROOT}
     chmod -R g+rws "${RBENV_ROOT}" 
-
-    git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
-    git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
-    else
-        echo "rbenv already installed."
-    fi
+    [ ! -d "${RBENV_ROOT}/plugins/ruby-build" ] && git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
+    [ ! -d "${RBENV_ROOT}/plugins/ruby-gemset" ] && git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
 fi
 
 rbenv_rc_snippet=$(cat <<EOF

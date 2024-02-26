@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -7,14 +7,14 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-export PYENV_ROOT="${PYENV_INSTALL_PATH:-"/usr/local/pyenv"}"
+export PYENV_ROOT="${PYENV_PATH}"
 
 # Comma-separated list of python versions to be installed
 # alongside PYTHON_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${PYTHON_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
+USERNAME=$(get_target_user $USERNAME)
 
 # Mac OS packages
 install_mac_packages() {
@@ -22,7 +22,10 @@ install_mac_packages() {
 		pyenv
 		pyenv-virtualenv
 	)
-	brew install "${packages[@]}"
+	run_brew_command_as_target_user install "${packages[@]}"
+    #[ ! -e $PYENV_ROOT ] && ln -s $(brew --prefix pyenv) $PYENV_ROOT
+    #[ ! -d "$PYENV_ROOT/plugins" ] && mkdir -p "$PYENV_ROOT/plugins"
+    #[ ! -e "$PYENV_ROOT/plugins/pyenv-virtualenv" ] && ln -s $(brew --prefix pyenv-virtualenv) $PYENV_ROOT/plugins/pyenv-virtualenv
 }
 
 # Debian / Ubuntu packages
@@ -55,15 +58,10 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     usermod -a -G pyenv ${USERNAME}
 
     umask 0002
-    if [ ! -d "${PYENV_ROOT}" ]; then
-    git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
+    [ ! -d ${PYENV_ROOT} ] && git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
     chown -R "root:pyenv" ${PYENV_ROOT}
     chmod -R g+rws "${PYENV_ROOT}" 
-
-    git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
-    else
-        echo "pyenv already installed."
-    fi
+    [ ! -d "${PYENV_ROOT}/plugins/pyenv-virtualenv" ] && git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 fi
 
 pyenv_rc_snippet=$(cat <<EOF

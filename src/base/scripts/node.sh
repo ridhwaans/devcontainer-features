@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -7,18 +7,16 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-export NVM_DIR="${NVM_INSTALL_PATH:-"/usr/local/nvm"}"
+export NVM_DIR="${NVM_PATH}"
 
 # Comma-separated list of node versions to be installed
 # alongside NODE_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${NODE_ADDITIONAL_VERSIONS:-""}"
 
 # Determine the appropriate non-root user
-USERNAME=$(get_non_root_user $USERNAME)
+USERNAME=$(get_target_user $USERNAME)
 
-if [ "$ADJUSTED_ID" = "mac" ]; then
-    git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
-else
+if [ "$ADJUSTED_ID" != "mac" ]; then
     # Create nvm group to the user's UID or GID to change while still allowing access to nvm
     if ! cat /etc/group | grep -e "^nvm:" > /dev/null 2>&1; then
         groupadd -r nvm
@@ -26,14 +24,10 @@ else
     usermod -a -G nvm ${USERNAME}
 
     umask 0002
-    if [ ! -d "${NVM_DIR}" ]; then
-        git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
-        chown -R "root:nvm" "${NVM_DIR}"
-        chmod -R g+rws "${NVM_DIR}"
-        source ${NVM_DIR}/nvm.sh
-    else
-        echo "nvm already installed."
-    fi
+    [ ! -d ${NVM_DIR} ] && git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
+    chown -R "root:nvm" "${NVM_DIR}"
+    chmod -R g+rws "${NVM_DIR}"
+    source ${NVM_DIR}/nvm.sh
 fi
 
 # Adjust node version if required
