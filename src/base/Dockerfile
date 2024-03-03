@@ -14,4 +14,7 @@ COPY $CLIENT_DIR/install.sh $WORKING_DIR/
 
 COPY $CLIENT_DIR/scripts/ $WORKING_DIR/scripts/
 
+# Required for first time sudo commands
+RUN apt-get update && apt-get install -y sudo
+
 WORKDIR $WORKING_DIR

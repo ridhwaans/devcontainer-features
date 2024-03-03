@@ -238,7 +238,8 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   usermod -a -G zplug ${USERNAME}
   umask 002
   chown -R "root:zplug" "$(dirname $ZSHPLUG_PATH)"
-  chmod -R g+rws "$(dirname $ZSHPLUG_PATH)" 
+  chmod -R g+rws "$(dirname $ZSHPLUG_PATH)"
+  # drwxrwxr-x to cache, log, repos
 fi
 
 curl -fLo "${VIMPLUG_PATH}/autoload/plug.vim" --create-dirs \
@@ -250,7 +251,7 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   fi
   usermod -a -G vimplug ${USERNAME}
   chown -R "root:vimplug" "$(dirname $VIMPLUG_PATH)"
-  chmod -R g+rX "$(dirname $VIMPLUG_PATH)" 
+  chmod -R g+rX "$(dirname $VIMPLUG_PATH)"
 fi
 
 zsh_rc_snippet=$(cat <<EOF
@@ -275,7 +276,7 @@ if [ "${UPDATE_RC}" = "true" ]; then
 fi
 
 vim_rc_snippet=$(cat <<EOF
-let g:vim_plug_home = '/usr/local/share/.vim/bundle'
+let g:vim_plug_home = '$VIMPLUG_PATH'
 
 execute 'source ' . g:vim_plug_home . '/autoload/plug.vim'
 call plug#begin(g:vim_plug_home . '/plugged')

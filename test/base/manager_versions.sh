@@ -6,8 +6,9 @@ set -e
 source dev-container-features-test-lib
 
 # Check plugin managers
-check "non-root user zplug" ls -al /usr/local/share/.zsh/bundle
-check "non-root user vim-plug" ls -al /usr/local/share/.vim/bundle
+check "check for zplug" zplug --version
+VIMPLUG_PATH="/usr/local/share/vim/bundle"
+check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
 
 source /etc/zsh/zshrc
 

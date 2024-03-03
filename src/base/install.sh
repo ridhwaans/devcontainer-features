@@ -7,6 +7,8 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
+start_time=$(date +%s)
+
 if [ $(uname) = Darwin ]; then
     export ADJUSTED_ID="mac"
 elif [ $(uname) = Linux ]; then
@@ -53,5 +55,9 @@ for script in "${scripts[@]}"; do
 
     ((current_script++))
 done
+
+end_time=$(date +%s)
+elapsed=$(( end_time - start_time ))
+echo -e "Install took $elapsed seconds"
 
 exit $?

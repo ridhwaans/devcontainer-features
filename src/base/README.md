@@ -21,12 +21,11 @@ A devcontainer feature
 | userUid                  | User UID                                          | string  | automatic                       |
 | userGid                  | User GID                                          | string  | automatic                       |
 | updateRc                 | Update RC files                                   | boolean | true                            |
-| setTheme                 | Set theme for vim and zsh                         | boolean | true                            |
-| vundleDir                | Vundle Install Path                               | string  | /usr/local/share/.vim/bundle    |
-| antigenDir               | Antigen Install Path                              | string  | /usr/local/share/.zsh/bundle    |
-| vimRcPath                | Path to the vimrc file                            | string  | /etc/vim/vimrc                 |
-| zshRcPath                | Path to the zshrc file                            | string  | /etc/zsh/zshrc                 |
-| bashRcPath               | Path to the bashrc file                           | string  | /etc/bash.bashrc               |
+| vundleDir                | Vundle Install Path                               | string  | /usr/local/share/vim/bundle    |
+| antigenDir               | Antigen Install Path                              | string  | /usr/local/share/zsh/bundle    |
+| vimRcPath                | Path to the vimrc file                            | string  | ~/.vimrc                 |
+| zshRcPath                | Path to the zshrc file                            | string  | ~/.zshrc                 |
+| bashRcPath               | Path to the bashrc file                           | string  | ~/.bashrc               |
 | javaVersion              | Java Version                                      | string  | lts                             |
 | installGradle            | Install Gradle                                    | boolean | false                           |
 | gradleVersion            | Gradle Version                                    | string  | latest                          |
