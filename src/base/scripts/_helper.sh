@@ -22,29 +22,6 @@ updaterc() {
   fi
 }
 
-get_target_user() {
-  local USERNAME
-
-  if [ "${1}" = "auto" ] || [ "${1}" = "automatic" ]; then
-    USERNAME=""
-    if [ "$ADJUSTED_ID" = "mac" ]; then
-      FIRST_USER=$(dscl . -list /Users UniqueID | awk -v val=501 '$2 == val {print $1}')
-    else
-      FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
-    fi
-    if id -u ${FIRST_USER} > /dev/null 2>&1; then
-      USERNAME=${FIRST_USER}
-    fi
-    [ "${USERNAME}" = "" ] && USERNAME="root"
-  elif [ "${1}" = "none" ] || ! id -u "${1}" > /dev/null 2>&1; then
-    USERNAME="root"
-  else
-    USERNAME="${1}"
-  fi
-
-  echo "${USERNAME}"
-}
-
 run_brew_command_as_target_user() {
     sudo -u $USERNAME brew "$@"
 }
@@ -67,7 +44,7 @@ find_version_from_git_tags() {
     local repository=$2
     local prefix=${3:-"tags/v"}
     local separator=${4:-"."}
-    local last_part_optional=${5:-"false"}    
+    local last_part_optional=${5:-"false"}
     if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
         local escaped_separator=${separator//./\\.}
         local last_part
@@ -94,7 +71,6 @@ find_version_from_git_tags() {
 }
 
 export -f updaterc
-export -f get_target_user
 export -f find_version_from_git_tags
 export -f run_brew_command_as_target_user
 export -f conditional_grep

@@ -13,9 +13,6 @@ export PYENV_ROOT="${PYENV_PATH}"
 # alongside PYTHON_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${PYTHON_ADDITIONAL_VERSIONS:-""}"
 
-# Determine the appropriate non-root user
-USERNAME=$(get_target_user $USERNAME)
-
 # Mac OS packages
 install_mac_packages() {
     packages=(
@@ -33,7 +30,7 @@ install_debian_packages(){
     # Ensure apt is in non-interactive to avoid prompts
     export DEBIAN_FRONTEND=noninteractive
 
-    # General requirements 
+    # General requirements
     # https://stackoverflow.com/a/71347968/3577482
     # https://stackoverflow.com/questions/50757647/e-gnupg-gnupg2-and-gnupg1-do-not-seem-to-be-installed-but-one-of-them-is-requ
     # https://github.com/pyenv/pyenv/issues/677
@@ -60,7 +57,7 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     umask 0002
     [ ! -d ${PYENV_ROOT} ] && git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
     chown -R "root:pyenv" ${PYENV_ROOT}
-    chmod -R g+rws "${PYENV_ROOT}" 
+    chmod -R g+rws "${PYENV_ROOT}"
     [ ! -d "${PYENV_ROOT}/plugins/pyenv-virtualenv" ] && git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 fi
 

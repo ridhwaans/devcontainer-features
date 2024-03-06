@@ -7,9 +7,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-# Determine the appropriate non-root user
-USERNAME=$(get_target_user $USERNAME)
-
 if [ "$ADJUSTED_ID" = "mac" ]; then
     packages=(
       go

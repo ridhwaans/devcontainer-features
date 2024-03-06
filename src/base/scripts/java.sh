@@ -13,9 +13,6 @@ export SDKMAN_DIR="${SDKMAN_PATH}"
 # alongside JAVA_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${JAVA_ADDITIONAL_VERSIONS:-""}"
 
-# Determine the appropriate non-root user
-USERNAME=$(get_target_user $USERNAME)
-
 # Use SDKMAN to install something using a partial version match
 sdk_install() {
     local install_type=$1

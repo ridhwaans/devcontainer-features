@@ -13,9 +13,6 @@ export RBENV_ROOT="${RBENV_PATH}"
 # alongside RUBY_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${RUBY_ADDITIONAL_VERSIONS:-""}"
 
-# Determine the appropriate non-root user
-USERNAME=$(get_target_user $USERNAME)
-
 # Mac OS packages
 install_mac_packages() {
     packages=(
@@ -35,7 +32,7 @@ install_debian_packages(){
     # Ensure apt is in non-interactive to avoid prompts
     export DEBIAN_FRONTEND=noninteractive
 
-    # General requirements 
+    # General requirements
     # https://stackoverflow.com/a/9510209/3577482, https://github.com/rbenv/ruby-build/discussions/2118
     apt install -y --no-install-recommends ca-certificates software-properties-common build-essential gnupg2 libreadline-dev \
                                         procps dirmngr gawk autoconf automake bison libffi-dev libgdbm-dev libncurses5-dev \
@@ -69,7 +66,7 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     umask 0002
     [ ! -d ${RBENV_ROOT} ] && git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
     chown -R "root:rbenv" ${RBENV_ROOT}
-    chmod -R g+rws "${RBENV_ROOT}" 
+    chmod -R g+rws "${RBENV_ROOT}"
     [ ! -d "${RBENV_ROOT}/plugins/ruby-build" ] && git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build
     [ ! -d "${RBENV_ROOT}/plugins/ruby-gemset" ] && git clone https://github.com/jf/rbenv-gemset.git ${RBENV_ROOT}/plugins/ruby-gemset
 fi

@@ -19,58 +19,58 @@ install_mac_packages() {
 		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	fi
 
-# Make sure we’re using the latest Homebrew
-run_brew_command_as_target_user update
+  # Make sure we’re using the latest Homebrew
+  run_brew_command_as_target_user update
 
-# Upgrade any already-installed formulae
-run_brew_command_as_target_user upgrade
+  # Upgrade any already-installed formulae
+  run_brew_command_as_target_user upgrade
 
-packages=(
-    dockutil
-    fontconfig
-    git
-    grep
-    jq
-    neofetch
-    tig
-    tree
-)
-run_brew_command_as_target_user install "${packages[@]}"
+  packages=(
+      dockutil
+      fontconfig
+      git
+      grep
+      jq
+      neofetch
+      tig
+      tree
+  )
+  run_brew_command_as_target_user install "${packages[@]}"
 
-# Install Caskroom
-run_brew_command_as_target_user tap homebrew/cask-versions
+  # Install Caskroom
+  run_brew_command_as_target_user tap homebrew/cask-versions
 
-apps=(
-    beekeeper-studio
-    docker
-    discord
-    dropbox
-    figma
-    iterm2-nightly
-    kap
-    mounty
-    notion
-    postman
-    steam
-    visual-studio-code
-)
+  apps=(
+      beekeeper-studio
+      docker
+      discord
+      dropbox
+      figma
+      iterm2-nightly
+      kap
+      mounty
+      notion
+      postman
+      steam
+      visual-studio-code
+  )
 
-if [ ! -d "/Applications/Google Chrome.app" ]; then
-    apps+=(google-chrome)
-fi
+  if [ ! -d "/Applications/Google Chrome.app" ]; then
+      apps+=(google-chrome)
+  fi
 
-if [ ! -d "/Applications/Slack.app" ]; then
-    apps+=(slack)
-fi
+  if [ ! -d "/Applications/Slack.app" ]; then
+      apps+=(slack)
+  fi
 
-if [ ! -d "/Applications/zoom.us.app" ]; then
-    apps+=(zoom)
-fi
+  if [ ! -d "/Applications/zoom.us.app" ]; then
+      apps+=(zoom)
+  fi
 
-run_brew_command_as_target_user install --cask "${apps[@]}"
+  run_brew_command_as_target_user install --cask "${apps[@]}"
 
-# Remove outdated versions from the cellar
-run_brew_command_as_target_user cleanup
+  # Remove outdated versions from the cellar
+  run_brew_command_as_target_user cleanup
 
 	# Set Dock items
 	OLDIFS=$IFS
@@ -141,26 +141,6 @@ install_debian_packages() {
     locale-gen
   fi
 }
-
-# If in automatic mode, determine if a user already exists, if not use vscode
-if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
-  USERNAME=""
-  if [ "$ADJUSTED_ID" = "mac" ]; then
-    FIRST_USER=$(dscl . -list /Users UniqueID | awk -v val=501 '$2 == val {print $1}')
-  else
-    FIRST_USER="$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)"
-  fi
-  if id -u ${FIRST_USER} > /dev/null 2>&1; then
-    USERNAME=${FIRST_USER}
-  fi
-  if [ "${USERNAME}" = "" ]; then
-      USERNAME=vscode
-  fi
-elif [ "${USERNAME}" = "none" ]; then
-    USERNAME=root
-    USER_UID=0
-    USER_GID=0
-fi
 
 if [ "$ADJUSTED_ID" = "mac" ]; then
   dseditgroup -o edit -a $USERNAME -t user wheel
@@ -255,6 +235,7 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
 fi
 
 zsh_rc_snippet=$(cat <<EOF
+export LANG=en_US.UTF-8
 export ZPLUG_HOME="$ZSHPLUG_PATH"
 source \$ZPLUG_HOME/init.zsh
 

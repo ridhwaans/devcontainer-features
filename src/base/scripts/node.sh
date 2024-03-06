@@ -13,9 +13,6 @@ export NVM_DIR="${NVM_PATH}"
 # alongside NODE_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${NODE_ADDITIONAL_VERSIONS:-""}"
 
-# Determine the appropriate non-root user
-USERNAME=$(get_target_user $USERNAME)
-
 if [ "$ADJUSTED_ID" != "mac" ]; then
     # Create nvm group to the user's UID or GID to change while still allowing access to nvm
     if ! cat /etc/group | grep -e "^nvm:" > /dev/null 2>&1; then
