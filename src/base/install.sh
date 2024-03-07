@@ -9,8 +9,8 @@ fi
 
 start_time=$(date +%s)
 
-source $(dirname $0)/scripts/_config.sh
-source $(dirname $0)/scripts/_helper.sh
+source $(dirname $0)/modules/_config.sh
+source $(dirname $0)/modules/_helper.sh
 
 if [ $(uname) = Darwin ]; then
   export ADJUSTED_ID="mac"
@@ -47,7 +47,7 @@ elif [ "${USERNAME}" = "none" ]; then
   USER_GID=0
 fi
 
-scripts=(
+modules=(
   common-utils.sh
   java.sh
   python.sh
@@ -56,28 +56,28 @@ scripts=(
   go.sh
   tools.sh
 )
+total=${#modules[@]}
+cur=1
 
-script_dir="$(dirname "$0")/scripts"
-script_count=${#scripts[@]}
-current_script=1
+for module in "${modules[@]}"; do
+    $(which bash) $(dirname $0)/modules/$module "$@"
+    exit_status=$?
 
-for script in "${scripts[@]}"; do
-    $(which bash) "$script_dir/$script" "$@"
-
-    script_status=$?
-
-    if [ $script_status -eq 0 ]; then
-        echo "($current_script/$script_count) Script '$script' executed successfully."
+    if [ $exit_status -eq 0 ]; then
+        echo "($cur/$total) Module '$module' executed successfully."
     else
-        echo "Error: ($current_script/$script_count) Script '$script' failed to execute with status $script_status."
+        echo "Error: ($cur/$total) Module '$module' failed to execute with status $exit_status."
         exit 1
     fi
-
-    ((current_script++))
+    ((cur++))
 done
 
 end_time=$(date +%s)
 elapsed=$(( end_time - start_time ))
-echo -e "Install took $elapsed seconds."
+echo "Install took $elapsed seconds."
+
+echo "elapsed=$elapsed" > .report
+echo "ADJUSTED_ID=$ADJUSTED_ID" >> .report
+echo "USERNAME=$USERNAME" >> .report
 
 exit $?

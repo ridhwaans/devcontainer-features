@@ -181,10 +181,10 @@ if [ "${USERNAME}" != "root" ]; then
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
 
-# Set default shell
+# Set default shell & verify
 chsh -s /bin/zsh ${USERNAME}
 if [ "$ADJUSTED_ID" = "mac" ]; then
-  echo $SHELL
+  dscl . -read /Users/${USERNAME} UserShell
 else
   grep "^${USERNAME}:" /etc/passwd | cut -d: -f7
 fi

@@ -23,6 +23,7 @@ updaterc() {
 }
 
 run_brew_command_as_target_user() {
+    # workaround for issue running brew as root
     sudo -u $USERNAME brew "$@"
 }
 
