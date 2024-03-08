@@ -5,7 +5,7 @@
         "base": {}
     }
   },
-  "non_root_user_default_shell": {
+  "first_user": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
         "base": {}
@@ -13,6 +13,7 @@
   },
   "manager_versions": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "remoteUser": "vscode",
     "features": {
         "base": {}
     }

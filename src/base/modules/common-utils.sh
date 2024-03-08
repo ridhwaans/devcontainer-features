@@ -217,8 +217,10 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   fi
   usermod -a -G zplug ${USERNAME}
   umask 002
+  mkdir -p $ZSHPLUG_PATH/{cache,log,repos}
   chown -R "root:zplug" "$(dirname $ZSHPLUG_PATH)"
   chmod -R g+rws "$(dirname $ZSHPLUG_PATH)"
+  chmod 775 $ZSHPLUG_PATH/{cache,log,repos}
   # drwxrwxr-x to cache, log, repos
 fi
 
@@ -267,7 +269,7 @@ EOF
 
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "vim" "${vim_rc_snippet}"
-  vim +silent! +PlugInstall +qall
+  vim +silent! +PlugInstall +PlugClean +qall
 fi
 
 echo "Done!"

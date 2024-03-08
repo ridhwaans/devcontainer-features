@@ -15,11 +15,6 @@
         "default": "automatic",
         "description": "Enter the name of a non-root user to configure or 'none' to skip"
       },
-      "setTheme": {
-        "type": "boolean",
-        "default": true,
-        "description": "Apply theme to vim and zsh"
-      },
       "userUid": {
         "type": "string",
         "default": "automatic",
@@ -52,12 +47,12 @@
       },
       "vimplugPath": {
         "type": "string",
-        "default": "/usr/local/share/.vim/bundle",
+        "default": "/usr/local/share/vim/bundle",
         "description": "Vim Plugin Manager Install Path"
       },
       "zshplugPath": {
         "type": "string",
-        "default": "/usr/local/share/.zsh/bundle",
+        "default": "/usr/local/share/zsh/bundle",
         "description": "Zsh Plugin Manager Install Path"
       },
       "javaVersion": {
