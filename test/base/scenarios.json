@@ -1,21 +1,10 @@
 {
-  "common_utils": {
-    "image": "mcr.microsoft.com/devcontainers/base:debian",
-    "features": {
-        "base": {}
-    }
-  },
-  "first_user": {
-    "image": "mcr.microsoft.com/devcontainers/base:debian",
-    "features": {
-        "base": {}
-    }
-  },
-  "manager_versions": {
+  "common-utils": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "remoteUser": "vscode",
     "features": {
-        "base": {}
+        "base": {
+        }
     }
   }
 }

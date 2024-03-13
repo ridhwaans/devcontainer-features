@@ -108,6 +108,7 @@ install_debian_packages() {
   export DEBIAN_FRONTEND=noninteractive
 
   packages=(
+    acl
     ca-certificates
     curl
     fontconfig
@@ -216,12 +217,13 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
       groupadd -r zplug
   fi
   usermod -a -G zplug ${USERNAME}
-  umask 002
   mkdir -p $ZSHPLUG_PATH/{cache,log,repos}
-  chown -R "root:zplug" "$(dirname $ZSHPLUG_PATH)"
-  chmod -R g+rws "$(dirname $ZSHPLUG_PATH)"
-  chmod 775 $ZSHPLUG_PATH/{cache,log,repos}
-  # drwxrwxr-x to cache, log, repos
+
+  chown -R "root:zplug" $ZSHPLUG_PATH
+  chmod -R 775 $ZSHPLUG_PATH #2775 causes compaudit errors
+
+  #chmod -R g+rwX,o-rwx $ZSHPLUG_PATH
+  #chmod -R g+s $ZSHPLUG_PATH
 fi
 
 curl -fLo "${VIMPLUG_PATH}/autoload/plug.vim" --create-dirs \
@@ -244,10 +246,7 @@ source \$ZPLUG_HOME/init.zsh
 zplug "agnoster/3712874", from:gist, as:theme, use:agnoster.zsh-theme
 
 if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
+  echo; zplug install
 fi
 
 zplug load --verbose
