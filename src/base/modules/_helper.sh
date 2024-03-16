@@ -13,6 +13,7 @@ updaterc() {
   rc_dir=$(dirname "$rc_path")
   [ ! -d "$rc_dir" ] && mkdir -p "$rc_dir"
   [ ! -f "$rc_path" ] && touch "$rc_path"
+  [ "$(stat -c '%U:%G' "$rc_path")" != "$USERNAME:$USERNAME" ] && chown $USERNAME:$USERNAME $rc_path
 
   if [[ "$(cat $rc_path)" = *"$rc_content"* ]]; then
     echo "Content already exists in $rc_path"

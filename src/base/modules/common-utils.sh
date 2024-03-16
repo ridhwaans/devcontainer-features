@@ -210,6 +210,7 @@ else
   fc-list | grep "Roboto Mono for Powerline.ttf"
 fi
 
+echo "Installing system-wide plugin manager for shell..."
 [ ! -d ${ZSHPLUG_PATH} ] && git clone https://github.com/zplug/zplug ${ZSHPLUG_PATH}
 if [ "$ADJUSTED_ID" != "mac" ]; then
   # Create group
@@ -219,11 +220,8 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   usermod -a -G zplug ${USERNAME}
   mkdir -p $ZSHPLUG_PATH/{cache,log,repos}
 
-  chown -R "root:zplug" $ZSHPLUG_PATH
-  chmod -R 775 $ZSHPLUG_PATH #2775 causes compaudit errors
-
-  #chmod -R g+rwX,o-rwx $ZSHPLUG_PATH
-  #chmod -R g+s $ZSHPLUG_PATH
+  chown -R "root:zplug" $(dirname $ZSHPLUG_PATH)
+  chmod -R 775 $(dirname $ZSHPLUG_PATH)
 fi
 
 curl -fLo "${VIMPLUG_PATH}/autoload/plug.vim" --create-dirs \
@@ -235,13 +233,16 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   fi
   usermod -a -G vimplug ${USERNAME}
   chown -R "root:vimplug" "$(dirname $VIMPLUG_PATH)"
-  chmod -R g+rX "$(dirname $VIMPLUG_PATH)"
+  chmod -R 775 "$(dirname $VIMPLUG_PATH)"
 fi
 
 zsh_rc_snippet=$(cat <<EOF
 export LANG=en_US.UTF-8
-export ZPLUG_HOME="$ZSHPLUG_PATH"
-source \$ZPLUG_HOME/init.zsh
+export ZPLUG_HOME="~/.zsh/bundle"
+export ZSHPLUG_PATH="$ZSHPLUG_PATH"
+
+source \$ZSHPLUG_PATH/init.zsh
+fpath+=("\$ZSHPLUG_PATH/repos")
 
 zplug "agnoster/3712874", from:gist, as:theme, use:agnoster.zsh-theme
 

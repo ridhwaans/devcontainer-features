@@ -18,11 +18,6 @@ check "user shell should be zsh" sudo grep "^$CREATED_USER:" /etc/passwd | cut -
 check "should be logged in as the provided user" echo $LOGNAME | grep "vscode"
 source ~/.zshrc
 check "check for zplug" zplug --version
-
-# getfacl --version
-# ls -al $ZSHPLUG_PATH/cache
-# compaudit
-
 check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
 
 # Check language managers
