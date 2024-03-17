@@ -1,14 +1,1 @@
-{
-    "all_the_clis": {
-        "image": "mcr.microsoft.com/devcontainers/base:debian",
-        "features": {
-            "base": {}
-        }
-    },
-    "language_versions": {
-      "image": "mcr.microsoft.com/devcontainers/base:debian",
-      "features": {
-          "base": {}
-      }
-  }
-}
+{}

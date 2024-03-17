@@ -6,5 +6,19 @@
         "base": {
         }
     }
+  },
+  "language-versions": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "remoteUser": "vscode",
+    "features": {
+        "base": {}
+    }
+  },
+  "tools": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "remoteUser": "vscode",
+    "features": {
+        "base": {}
+    }
   }
 }

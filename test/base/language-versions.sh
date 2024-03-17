@@ -1,9 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/zsh
 
-set -e
+#set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib
+
+source ~/.zshrc
+echo "shell is $(ps -p $$)"
+
+# Check language managers
+check "check for nvm" nvm --version
+check "check for sdkman" sdk version
+check "check for rbenv" rbenv --version
+check "check for pyenv" pyenv --version
 
 # Definition specific tests
 check "check for node" node --version
