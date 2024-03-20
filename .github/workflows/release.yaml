@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    if: false
     if: ${{ github.ref == 'refs/heads/main' && false }}
     runs-on: ubuntu-22.04
     steps:

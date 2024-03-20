@@ -6,7 +6,6 @@
 source dev-container-features-test-lib
 
 source ~/.zshrc
-echo "shell is $(ps -p $$)"
 
 # Check language managers
 check "check for nvm" nvm --version

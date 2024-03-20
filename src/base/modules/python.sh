@@ -20,9 +20,6 @@ install_mac_packages() {
 		pyenv-virtualenv
 	)
 	run_brew_command_as_target_user install "${packages[@]}"
-    #[ ! -e $PYENV_ROOT ] && ln -s $(brew --prefix pyenv) $PYENV_ROOT
-    #[ ! -d "$PYENV_ROOT/plugins" ] && mkdir -p "$PYENV_ROOT/plugins"
-    #[ ! -e "$PYENV_ROOT/plugins/pyenv-virtualenv" ] && ln -s $(brew --prefix pyenv-virtualenv) $PYENV_ROOT/plugins/pyenv-virtualenv
 }
 
 # Debian / Ubuntu packages

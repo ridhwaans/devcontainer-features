@@ -6,7 +6,6 @@
 source dev-container-features-test-lib
 
 source ~/.zshrc
-echo "shell is $(ps -p $$)"
 
 ZSHPLUG_PATH="/usr/local/share/zsh/bundle"
 VIMPLUG_PATH="/usr/local/share/vim/bundle"

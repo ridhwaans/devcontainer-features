@@ -6,7 +6,6 @@
 source dev-container-features-test-lib
 
 source ~/.zshrc
-echo "shell is $(ps -p $$)"
 
 # Definition specific tests
 check "check for aws" aws --version

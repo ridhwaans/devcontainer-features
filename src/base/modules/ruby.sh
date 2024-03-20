@@ -18,13 +18,9 @@ install_mac_packages() {
     packages=(
 		rbenv
 		ruby-build
-        rbenv-gemset
+    rbenv-gemset
 	)
 	run_brew_command_as_target_user install "${packages[@]}"
-    # [ ! -e $RBENV_ROOT ] && ln -s $(brew --prefix rbenv) $RBENV_ROOT
-    # [ ! -d "$RBENV_ROOT/plugins" ] && mkdir -p "$RBENV_ROOT/plugins"
-    # [ ! -e "$RBENV_ROOT/plugins/ruby-build" ] && ln -s $(brew --prefix ruby-build) $RBENV_ROOT/plugins/ruby-build
-    # [ ! -e "$RBENV_ROOT/plugins/rbenv-gemset" ] && ln -s $(brew --prefix rbenv-gemset) $RBENV_ROOT/plugins/rbenv-gemset
 }
 
 # Debian / Ubuntu packages
