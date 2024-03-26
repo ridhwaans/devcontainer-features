@@ -1,6 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
-#set -e
+set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib
@@ -16,11 +16,11 @@ check "user timezone should be UTC" echo $(date +%Z) | grep "UTC"
 check "user lang should be UTF-8" echo $LANG | grep "en_US.UTF-8"
 check "user shell should be zsh" sudo grep "^$LOGNAME:" /etc/passwd | cut -d: -f7 | grep "zsh"
 
+check "zsh version" zsh --version
+check "vim version" vim --version | head -n 1
 # Check plugin managers
 check "check for zplug" zplug --version
 check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
-
-
 
 # Report result
 reportResults
