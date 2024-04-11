@@ -1,11 +1,9 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib
-
-source ~/.zshrc
 
 # Definition specific tests
 check "check for aws" aws --version

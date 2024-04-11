@@ -135,8 +135,7 @@ install_debian_packages() {
   apt upgrade -y --no-install-recommends
   apt autoremove -y
 
-  # Fix character not in range error before shell change
-  # https://github.com/ohmyzsh/ohmyzsh/issues/4786
+  # Fix for https://github.com/ohmyzsh/ohmyzsh/issues/4786
   if ! grep -o -E '^\s*en_US.UTF-8\s+UTF-8' /etc/locale.gen > /dev/null; then
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     locale-gen
@@ -177,7 +176,6 @@ fi
 
 # Add sudo support for non-root user
 if [ "${USERNAME}" != "root" ]; then
-  mkdir -p /etc/sudoers.d
   echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
@@ -187,7 +185,7 @@ chsh -s /bin/zsh ${USERNAME}
 if [ "$ADJUSTED_ID" = "mac" ]; then
   dscl . -read /Users/${USERNAME} UserShell
 else
-  grep "^${USERNAME}:" /etc/passwd | cut -d: -f7
+  getent passwd $(USERNAME) | awk -F: '{ print $7 }'
 fi
 
 # Install packages for appropriate OS

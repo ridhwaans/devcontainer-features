@@ -24,7 +24,6 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     [ ! -d ${NVM_DIR} ] && git clone https://github.com/nvm-sh/nvm.git ${NVM_DIR}
     chown -R "root:nvm" "${NVM_DIR}"
     chmod -R g+rws "${NVM_DIR}"
-    source ${NVM_DIR}/nvm.sh
 fi
 
 # Adjust node version if required

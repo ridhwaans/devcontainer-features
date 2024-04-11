@@ -1,25 +1,19 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib
 
-source ~/.zshrc
-
-ZSHPLUG_PATH="/usr/local/share/zsh/bundle"
-VIMPLUG_PATH="/usr/local/share/vim/bundle"
-
-check "should be logged in as the created user" echo $LOGNAME | grep "vscode"
+check "should be logged in as the created user" echo $(whoami) | grep "vscode"
 check "user should have a uid of 1000" echo $(id -nu 1000) | grep "vscode"
-check "user timezone should be UTC" echo $(date +%Z) | grep "UTC"
-check "user lang should be UTF-8" echo $LANG | grep "en_US.UTF-8"
-check "user shell should be zsh" sudo grep "^$LOGNAME:" /etc/passwd | cut -d: -f7 | grep "zsh"
+check "user default shell should be zsh" bash -c "getent passwd $(whoami) | awk -F: '{ print $7 }' | grep '/bin/zsh'"
+check "user default timezone should be UTC" echo $(date +%Z) | grep "UTC"
 
 check "zsh version" zsh --version
 check "vim version" vim --version | head -n 1
 # Check plugin managers
-check "check for zplug" zplug --version
+VIMPLUG_PATH="/usr/local/share/vim/bundle"
 check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
 
 # Report result

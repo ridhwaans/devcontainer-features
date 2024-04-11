@@ -52,13 +52,6 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
     fi
     usermod -a -G rbenv ${USERNAME}
 
-    # Adjust ruby version if required
-    if [ "${RUBY_VERSION}" = "none" ]; then
-        RUBY_VERSION=
-    elif [ "${RUBY_VERSION}" = "latest" ]; then
-        RUBY_VERSION="3.2.2"
-    fi
-
     umask 0002
     [ ! -d ${RBENV_ROOT} ] && git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT}
     chown -R "root:rbenv" ${RBENV_ROOT}
