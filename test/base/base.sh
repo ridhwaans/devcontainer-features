@@ -5,6 +5,24 @@ set -e
 # Optional: Import test library
 source dev-container-features-test-lib
 
+echo "~/.bashrc is:"
+cat ~/.bashrc
+echo "~/.zshrc is:"
+cat ~/.zshrc
+
+echo "PATH is $PATH"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    echo "The file $NVM_DIR/nvm.sh exists and is not empty."
+fi
+
+pwd
+ls -al
+echo ~/
+ls -al ~/
+
+cat /etc/passwd
+echo "id of current user $(whoami) is $(id -u)"
+
 # common-utils
 check "should be logged in as the created user" echo $(whoami) | grep "customUser"
 check "user should have a uid of 1055" echo $(id -nu 1055) | grep "customUser"
@@ -18,11 +36,6 @@ VIMPLUG_PATH="/usr/local/share/vim/bundle"
 check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
 
 source ~/.bashrc
-
-echo "PATH is $PATH"
-if [ -s "$NVM_DIR/nvm.sh" ]; then
-    echo "The file $NVM_DIR/nvm.sh exists and is not empty."
-fi
 
 # Check language managers
 check "check for nvm" nvm --version
