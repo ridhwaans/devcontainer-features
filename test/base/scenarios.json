@@ -1,12 +1,12 @@
 {
   "base": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
-    "remoteUser": "vscode",
+    "remoteUser": "customUser",
     "features": {
         "base": {
-          "username": "vscode",
-          "userUid": "1000",
-          "userGid": "1000"
+          "username": "customUser",
+          "userUid": "1055",
+          "userGid": "1055"
         }
     }
   }

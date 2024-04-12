@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-set -e
+#set -e
 
 # Optional: Import test library
 source dev-container-features-test-lib

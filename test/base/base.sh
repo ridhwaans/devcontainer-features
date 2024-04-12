@@ -6,8 +6,8 @@ set -e
 source dev-container-features-test-lib
 
 # common-utils
-check "should be logged in as the created user" echo $(whoami) | grep "vscode"
-check "user should have a uid of 1000" echo $(id -nu 1000) | grep "vscode"
+check "should be logged in as the created user" echo $(whoami) | grep "customUser"
+check "user should have a uid of 1055" echo $(id -nu 1055) | grep "customUser"
 check "user default shell should be zsh" bash -c "getent passwd $(whoami) | awk -F: '{ print $7 }' | grep '/bin/zsh'"
 check "user default timezone should be UTC" echo $(date +%Z) | grep "UTC"
 
@@ -19,9 +19,7 @@ check "check for vim-plug" ls -1 $VIMPLUG_PATH/autoload/plug.vim | wc -l
 
 source ~/.bashrc
 
-cat ~/.bashrc
-
-echo "NVM_DIR is $PATH"
+echo "PATH is $PATH"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
     echo "The file $NVM_DIR/nvm.sh exists and is not empty."
 fi
