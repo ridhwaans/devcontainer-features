@@ -3,7 +3,7 @@
 updaterc() {
   declare -A rc_paths=(
     [vim]="$(eval echo "~$USERNAME")/.vimrc"
-    [bash]="$(eval echo "~$USERNAME")/.bashrc"
+    [bash]="$(eval echo "~$USERNAME")/.profile"
     [zsh]="$(eval echo "~$USERNAME")/.zshrc"
   )
   local rc_key=$1
