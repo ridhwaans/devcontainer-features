@@ -185,8 +185,11 @@ chsh -s /bin/zsh ${USERNAME}
 if [ "$ADJUSTED_ID" = "mac" ]; then
   dscl . -read /Users/${USERNAME} UserShell
 else
-  getent passwd $(USERNAME) | awk -F: '{ print $7 }'
+  getent passwd $USERNAME | awk -F: '{ print $7 }'
 fi
+
+echo "debugging username, uid, gid, shell"
+cat /etc/passwd
 
 # Install packages for appropriate OS
 case "${ADJUSTED_ID}" in
@@ -222,6 +225,7 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
   chmod -R 775 $(dirname $ZSHPLUG_PATH)
 fi
 
+echo "Installing system-wide plugin manager for vim..."
 curl -fLo "${VIMPLUG_PATH}/autoload/plug.vim" --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 if [ "$ADJUSTED_ID" != "mac" ]; then
@@ -257,7 +261,7 @@ if [ "${UPDATE_RC}" = "true" ]; then
 fi
 
 vim_rc_snippet=$(cat <<EOF
-let g:vim_plug_home = '$VIMPLUG_PATH'
+let g:vim_plug_home="$VIMPLUG_PATH"
 
 execute 'source ' . g:vim_plug_home . '/autoload/plug.vim'
 call plug#begin(g:vim_plug_home . '/plugged')

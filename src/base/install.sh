@@ -79,5 +79,7 @@ echo "Install took $elapsed seconds."
 echo "elapsed=$elapsed" > .report
 echo "ADJUSTED_ID=$ADJUSTED_ID" >> .report
 echo "USERNAME=$USERNAME" >> .report
+echo "UID=$UID" >> .report
+echo "GID=$GID" >> .report
 
 exit $?

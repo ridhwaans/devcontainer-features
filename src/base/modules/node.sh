@@ -47,7 +47,7 @@ if [ "${UPDATE_RC}" = "true" ]; then
 fi
 
 if [ "${NODE_VERSION}" != "" ]; then
-    su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm install '${NODE_VERSION}' && nvm alias default '${NODE_VERSION}'"
+    su ${USERNAME} -c "umask 0002 && . ${NVM_DIR}/nvm.sh && nvm install '${NODE_VERSION}' && nvm alias default '${NODE_VERSION}'"
 fi
 
 # Additional node versions to be installed but not be set as default.
@@ -56,11 +56,11 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=","
         read -a additional_versions <<< "$ADDITIONAL_VERSIONS"
         for version in "${additional_versions[@]}"; do
-            su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm install ${version}"
+            su ${USERNAME} -c "umask 0002 && . ${NVM_DIR}/nvm.sh && nvm install ${version}"
         done
 
         if [ "${NODE_VERSION}" != "" ]; then
-          su ${USERNAME} -c "umask 0002 && source ${NVM_DIR}/nvm.sh && nvm use default"
+          su ${USERNAME} -c "umask 0002 && . ${NVM_DIR}/nvm.sh && nvm use default"
         fi
     IFS=$OLDIFS
 fi
