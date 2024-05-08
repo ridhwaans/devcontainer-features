@@ -49,6 +49,7 @@ sdk_install() {
     su ${USERNAME} -c "umask 0002 && . ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install ${install_type} ${requested_version} && sdk flush archives && sdk flush temp"
 }
 
+
 if [ "$ADJUSTED_ID" != "mac" ]; then
     # Install sdkman if not installed
     if [ ! -d "${SDKMAN_DIR}" ]; then
@@ -63,6 +64,10 @@ if [ "$ADJUSTED_ID" != "mac" ]; then
         chown -R "root:sdkman" ${SDKMAN_DIR}
         chmod -R g+rws "${SDKMAN_DIR}"
     fi
+else
+    # Install SDKMAN
+    curl -sSL "https://get.sdkman.io?rcupdate=false" | bash
+    chown -R $USERNAME ${SDKMAN_DIR}
 fi
 
 sdkman_rc_snippet=$(cat <<EOF

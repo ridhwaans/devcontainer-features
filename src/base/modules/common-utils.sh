@@ -11,12 +11,12 @@ fi
 install_mac_packages() {
   if ! command -v xcode-select &>/dev/null; then
     echo "Installing Command Line Tools..."
-    xcode-select --install
+    xcode-select --install && sudo xcodebuild -license accept
   fi
 
 	if ! command -v brew &> /dev/null; then
 		echo "Installing Homebrew..."
-		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+		yes '' | sudo -u $USERNAME bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	fi
 
   # Make sure we’re using the latest Homebrew
@@ -26,6 +26,7 @@ install_mac_packages() {
   run_brew_command_as_target_user upgrade
 
   packages=(
+      bash
       dockutil
       fontconfig
       git
@@ -37,16 +38,13 @@ install_mac_packages() {
   )
   run_brew_command_as_target_user install "${packages[@]}"
 
-  # Install Caskroom
-  run_brew_command_as_target_user tap homebrew/cask-versions
-
   apps=(
       beekeeper-studio
       docker
       discord
       dropbox
       figma
-      iterm2-nightly
+      iterm2@nightly
       kap
       mounty
       notion
@@ -106,7 +104,6 @@ install_mac_packages() {
 install_debian_packages() {
   # Ensure apt is in non-interactive to avoid prompts
   export DEBIAN_FRONTEND=noninteractive
-
   packages=(
     acl
     ca-certificates
@@ -258,6 +255,18 @@ EOF
 
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "zsh" "${zsh_rc_snippet}"
+fi
+
+brew_rc_snippet=$(cat <<EOF
+if [ \$(uname) = Darwin ]; then
+  eval \$(/opt/homebrew/bin/brew shellenv)
+fi
+EOF
+)
+
+if [ "${UPDATE_RC}" = "true" ]; then
+  updaterc "bash" "${brew_rc_snippet}"
+  updaterc "zsh" "${brew_rc_snippet}"
 fi
 
 vim_rc_snippet=$(cat <<EOF

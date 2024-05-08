@@ -1,20 +1,34 @@
 #!/usr/bin/env bash
 
 updaterc() {
-  declare -A rc_paths=(
-    [vim]="$(eval echo "~$USERNAME")/.vimrc"
-    [bash]="$(eval echo "~$USERNAME")/.profile"
-    [zsh]="$(eval echo "~$USERNAME")/.zshrc"
-  )
+  rc_paths=("vim" "$(eval echo "~$USERNAME")/.vimrc"
+          "bash" "$(eval echo "~$USERNAME")/.profile"
+          "zsh" "$(eval echo "~$USERNAME")/.zshrc")
+
+  get_value_by_key() {
+    local key="$1"
+    local index
+    for ((index = 0; index < ${#rc_paths[@]}; index+=2)); do
+        if [[ "${rc_paths[index]}" == "$key" ]]; then
+            echo "${rc_paths[index+1]}"
+            return 0
+        fi
+    done
+    return 1
+  }
+
   local rc_key=$1
   local rc_content=$2
 
-  rc_path="${rc_paths[$rc_key]}"
+  rc_path=$(get_value_by_key "$rc_key")
   rc_dir=$(dirname "$rc_path")
   [ ! -d "$rc_dir" ] && mkdir -p "$rc_dir"
   [ ! -f "$rc_path" ] && touch "$rc_path"
-  [ "$(stat -c '%U:%G' "$rc_path")" != "$USERNAME:$USERNAME" ] && chown $USERNAME:$USERNAME $rc_path
-
+  if [ "$ADJUSTED_ID" != "mac" ]; then
+     [ "$(stat -c '%U:%G' "$rc_path")" != "$USERNAME:$USERNAME" ] && chown $USERNAME:$USERNAME $rc_path
+  else
+     [ "$(stat -f '%Su:%Sg' "$rc_path")" != "$USERNAME:staff" ] && chown $USERNAME:staff $rc_path
+  fi
   if [[ "$(cat $rc_path)" = *"$rc_content"* ]]; then
     echo "Content already exists in $rc_path"
   else
@@ -25,7 +39,7 @@ updaterc() {
 
 run_brew_command_as_target_user() {
     # workaround for issue running brew as root
-    sudo -u $USERNAME brew "$@"
+    eval "$(/opt/homebrew/bin/brew shellenv)" && sudo -u $USERNAME brew "$@"
 }
 
 conditional_grep() {
@@ -38,7 +52,7 @@ conditional_grep() {
 }
 
 # Figure out correct version of a three part version number is not passed
-# Requires /bin/bash to run; ./ and /bin/zsh do not support indirect variable reference and extended pattern substitution syntax (//).
+# Requires Bash. Zsh does not support indirect variable reference and extended pattern substitution syntax (//).
 find_version_from_git_tags() {
     local variable_name=$1
     local requested_version=${!variable_name}
@@ -58,10 +72,12 @@ find_version_from_git_tags() {
         local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
         local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
         if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
-            declare -g ${variable_name}="$(echo "${version_list}" | head -n 1)"
+            local latest_version="$(echo "${version_list}" | head -n 1)"
+            eval "${variable_name}='${latest_version}'"
         else
             set +e
-            declare -g ${variable_name}="$(echo "${version_list}" | conditional_grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            local matching_version="$(echo "${version_list}" | conditional_grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            eval "${variable_name}='${matching_version}'"
             set -e
         fi
     fi

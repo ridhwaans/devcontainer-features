@@ -9,9 +9,6 @@ fi
 
 start_time=$(date +%s)
 
-source $(dirname $0)/modules/_config.sh
-source $(dirname $0)/modules/_helper.sh
-
 if [ $(uname) = Darwin ]; then
   export ADJUSTED_ID="mac"
 elif [ $(uname) = Linux ]; then
@@ -26,6 +23,9 @@ elif [ $(uname) = Linux ]; then
     exit 1
   fi
 fi
+
+source $(dirname $0)/modules/_config.sh
+source $(dirname $0)/modules/_helper.sh
 
 # If in automatic mode, determine if a user already exists, if not use vscode
 if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
