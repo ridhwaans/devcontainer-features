@@ -1,20 +1,26 @@
 name: "Release"
+
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      create_release:
+        description: "Should this push create a release?"
+        required: true
+        default: "false"
+        type: boolean
 
 jobs:
   release:
+    if: ${{ github.ref == 'refs/heads/main' && github.event.inputs.create_release == 'true' }}
+    runs-on: ubuntu-24.04
     permissions:
       packages: write
-    if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: "Publish"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish
         uses: devcontainers/action@v1
         with:
           publish-features: "true"
