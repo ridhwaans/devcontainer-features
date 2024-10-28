@@ -173,6 +173,9 @@ fi
 
 # Add sudo support for non-root user
 if [ "${USERNAME}" != "root" ]; then
+  # Ensure /etc/sudoers.d exists
+  [ -d /etc/sudoers.d ] || mkdir -p /etc/sudoers.d
+  # Add the user to sudoers with no password requirement
   echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME
   chmod 0440 /etc/sudoers.d/$USERNAME
 fi
