@@ -68,4 +68,38 @@ if [ ! -z "${ADDITIONAL_VERSIONS}" ]; then
     IFS=$OLDIFS
 fi
 
+
+nvm_rc_snippet=$(cat <<EOF
+export NVM_DIR="${NVM_DIR}"
+[ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+EOF
+)
+
+export BUN_INSTALL="${BUN_PATH}"
+
+# Install bun if not installed
+if [ ! -d "${BUN_INSTALL}" ]; then
+    # Create bun group, dir, and set sticky bit
+    if ! cat /etc/group | grep -e "^bun:" > /dev/null 2>&1; then
+        groupadd -r bun
+    fi
+    usermod -a -G bun ${USERNAME}
+    umask 0002
+    # Install bun
+    curl -fsSL https://bun.sh/install | bash
+    chown -R "root:bun" ${BUN_INSTALL}
+    chmod -R g+rws "${BUN_INSTALL}"
+fi
+
+bun_rc_snippet=$(cat <<EOF
+export BUN_INSTALL="${BUN_INSTALL}"
+export PATH="$BUN_INSTALL/bin:\$PATH"
+EOF
+)
+
+if [ "${UPDATE_RC}" = "true" ]; then
+  updaterc "zsh" "${bun_rc_snippet}"
+  updaterc "bash" "${bun_rc_snippet}"
+fi
+
 echo "Done!"

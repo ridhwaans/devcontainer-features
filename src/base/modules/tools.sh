@@ -22,12 +22,31 @@ if [ "$ADJUSTED_ID" = "mac" ]; then
 	)
 	run_brew_command_as_target_user install "${packages[@]}"
 else
-  # Install gh-cli
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-  chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-  apt update
-  apt install -y --no-install-recommends gh
+  # Install AWS CLI
+  if command -v aws &> /dev/null; then
+    echo "aws is installed. Version: $(aws --version)"
+  else
+    curl -L https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip --create-dirs -o /tmp/awscli-exe-linux-x86_64.zip && cd $(dirname $_)
+    unzip awscli-exe-linux-x86_64.zip -d aws-cli
+    ./aws-cli/aws/install --update
+    rm -rf aws-cli
+    rm -rf awscli-exe-linux-x86_64.zip
+  fi
+
+  # Install SAM CLI
+  if command -v sam &> /dev/null; then
+      echo "sam is installed. Version: $(sam --version)"
+  else
+    curl -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip --create-dirs -o /tmp/aws-sam-cli-linux-x86_64.zip && cd $(dirname $_)
+    unzip aws-sam-cli-linux-x86_64.zip -d aws-sam-cli
+    ./aws-sam-cli/install --update
+    rm -rf aws-sam-cli
+    rm -rf aws-sam-cli-linux-x86_64.zip
+  fi
+
+  # Install cfn-lint
+  export PYENV_ROOT="${PYENV_PATH}"
+  su ${USERNAME} -c "export PYENV_ROOT=${PYENV_ROOT}; export PATH=$PYENV_ROOT/bin:\$PATH; pyenv exec pip install -U cfn-lint"
 
   # Install exercism-cli
   if command -v exercism &> /dev/null; then
@@ -40,27 +59,12 @@ else
     rm -rf /tmp/${exercism_filename}
   fi
 
-  # Install AWS
-  if command -v aws &> /dev/null; then
-    echo "aws is installed. Version: $(aws --version)"
-  else
-    apt install -y --no-install-recommends awscli
-  fi
-
-  # Install SAM
-  if command -v sam &> /dev/null; then
-      echo "sam is installed. Version: $(sam --version)"
-  else
-    curl -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip --create-dirs -o /tmp/aws-sam-cli-linux-x86_64.zip && cd $(dirname $_)
-    unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
-    ./sam-installation/install --update
-    rm -rf sam-installation
-    rm -rf aws-sam-cli-linux-x86_64.zip
-  fi
-
-  # Install cfn-lint
-  export PYENV_ROOT="${PYENV_PATH}"
-  su ${USERNAME} -c "export PYENV_ROOT=${PYENV_ROOT}; export PATH=$PYENV_ROOT/bin:\$PATH; pyenv exec pip install -U cfn-lint"
+  # Install gh-cli
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+  chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+  apt update
+  apt install -y --no-install-recommends gh
 
   # Install terraform
   if command -v terraform &> /dev/null; then

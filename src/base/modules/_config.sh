@@ -34,6 +34,7 @@ export RUBY_ADDITIONAL_VERSIONS="${RUBYADDITIONALVERSIONS:-""}"
 export NVM_PATH="${NVMPATH:-"/usr/local/nvm"}"
 export NODE_VERSION="${NODEVERSION:-"latest"}"
 export NODE_ADDITIONAL_VERSIONS="${NODEADDITIONALVERSIONS:-""}"
+export BUN_PATH="${BUNPATH:-"/usr/local/bun"}"
 
 export GO_PATH="${GOPATH:-"/go"}"
 export GO_VERSION="${GOVERSION:-"latest"}"
