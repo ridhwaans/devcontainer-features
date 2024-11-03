@@ -20,7 +20,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Publish
+      - name: Get next version
+        uses: reecetech/version-increment@2023.10.2
+        id: version
+        with:
+          scheme: calver
+          increment: patch
+
+      - name: Update devcontainer-feature.json version
+        run: |
+          jq --arg new_version "${{ steps.version.outputs.version }}" '.version = $new_version' src/base/devcontainer-feature.json > src/base/devcontainer-feature.json.tmp && mv src/base/devcontainer-feature.json.tmp src/base/devcontainer-feature.json
+
+      - name: Release
         uses: devcontainers/action@v1
         with:
           publish-features: "true"

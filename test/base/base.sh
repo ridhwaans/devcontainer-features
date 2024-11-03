@@ -27,6 +27,7 @@ check "check for pyenv" pyenv --version
 
 # Check language versions
 check "check for node" node --version
+check "check for bun" bun --version
 check "check for java" java --version
 check "check for ruby" ruby --version
 check "check for python" python --version
