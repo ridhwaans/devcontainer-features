@@ -1,164 +1,179 @@
 {
-    "name": "Base",
-    "id": "base",
-    "version": "1.0.0",
-    "description": "Installs a base environment",
-    "options": {
-      "username": {
-        "type": "string",
-        "proposals": [
-          "automatic",
-          "vscode",
-          "codespace",
-          "none"
-        ],
-        "default": "automatic",
-        "description": "Enter the name of a non-root user to configure or 'none' to skip"
-      },
-      "userUid": {
-        "type": "string",
-        "default": "automatic",
-        "description": "User UID"
-      },
-      "userGid": {
-        "type": "string",
-        "default": "automatic",
-        "description": "User GID"
-      },
-      "updateRc": {
-        "type": "boolean",
-        "default": true,
-        "description": "Update RC files"
-      },
-      "vimRcPath": {
-        "type": "string",
-        "default": "/etc/vim/vimrc",
-        "description": "Path to the vimrc file"
-      },
-      "zshRcPath": {
-        "type": "string",
-        "default": "/etc/zsh/zshrc",
-        "description": "Path to the zshrc file"
-      },
-      "bashRcPath": {
-        "type": "string",
-        "default": "/etc/bash.bashrc",
-        "description": "Path to the bashrc file"
-      },
-      "vimplugPath": {
-        "type": "string",
-        "default": "/usr/local/share/vim/bundle",
-        "description": "Vim Plugin Manager Install Path"
-      },
-      "zshplugPath": {
-        "type": "string",
-        "default": "/usr/local/share/zsh/bundle",
-        "description": "Zsh Plugin Manager Install Path"
-      },
-      "javaVersion": {
-        "type": "string",
-        "default": "lts",
-        "description": "Java Version"
-      },
-      "installGradle": {
-        "type": "boolean",
-        "default": false,
-        "description": "Install Gradle"
-      },
-      "gradleVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Gradle Version"
-      },
-      "installMaven": {
-        "type": "boolean",
-        "default": false,
-        "description": "Install Maven"
-      },
-      "mavenVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Maven Version"
-      },
-      "sdkmanPath": {
-        "type": "string",
-        "default": "/usr/local/sdkman",
-        "description": "SDKMAN Install Path"
-      },
-      "javaAdditionalVersions": {
-        "type": "string",
-        "default": "",
-        "description": "Additional Java Versions"
-      },
-      "pythonVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Python Version"
-      },
-      "pyenvPath": {
-        "type": "string",
-        "default": "/usr/local/pyenv",
-        "description": "Pyenv Install Path"
-      },
-      "pythonAdditionalVersions": {
-        "type": "string",
-        "default": "",
-        "description": "Additional Python Versions"
-      },
-      "rubyVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Ruby Version"
-      },
-      "rbenvPath": {
-        "type": "string",
-        "default": "/usr/local/rbenv",
-        "description": "Rbenv Install Path"
-      },
-      "rubyAdditionalVersions": {
-        "type": "string",
-        "default": "",
-        "description": "Additional Ruby Versions"
-      },
-      "nodeVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Node.js Version"
-      },
-      "nvmPath": {
-        "type": "string",
-        "default": "/usr/local/nvm",
-        "description": "NVM Install Path"
-      },
-      "nodeAdditionalVersions": {
-        "type": "string",
-        "default": "",
-        "description": "Additional Node.js Versions"
-      },
-      "goVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Go Version"
-      },
-      "goDir": {
-        "type": "string",
-        "default": "/usr/local/go",
-        "description": "Go Install Path"
-      },
-      "goPath": {
-        "type": "string",
-        "default": "/go",
-        "description": "Go Path"
-      },
-      "exercismVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Exercism Version"
-      },
-      "terraformVersion": {
-        "type": "string",
-        "default": "latest",
-        "description": "Terraform Version"
-      }
+  "name": "Base",
+  "id": "base",
+  "version": "1.0.0",
+  "description": "Installs a base environment",
+  "options": {
+    "username": {
+      "type": "string",
+      "proposals": [
+        "automatic",
+        "vscode",
+        "codespace",
+        "none"
+      ],
+      "default": "automatic",
+      "description": "Enter the name of a non-root user to configure or 'none' to skip"
+    },
+    "userUid": {
+      "type": "string",
+      "default": "automatic",
+      "description": "User UID"
+    },
+    "userGid": {
+      "type": "string",
+      "default": "automatic",
+      "description": "User GID"
+    },
+    "updateRc": {
+      "type": "boolean",
+      "default": true,
+      "description": "Update RC files"
+    },
+    "vimRcPath": {
+      "type": "string",
+      "default": "/etc/vim/vimrc",
+      "description": "Path to the vimrc file"
+    },
+    "zshRcPath": {
+      "type": "string",
+      "default": "/etc/zsh/zshrc",
+      "description": "Path to the zshrc file"
+    },
+    "bashRcPath": {
+      "type": "string",
+      "default": "/etc/bash.bashrc",
+      "description": "Path to the bashrc file"
+    },
+    "vimplugPath": {
+      "type": "string",
+      "default": "/usr/local/share/vim/bundle",
+      "description": "Vim Plugin Manager Install Path"
+    },
+    "zshplugPath": {
+      "type": "string",
+      "default": "/usr/local/share/zsh/bundle",
+      "description": "Zsh Plugin Manager Install Path"
+    },
+    "javaVersion": {
+      "type": "string",
+      "default": "lts",
+      "description": "Java Version"
+    },
+    "installGradle": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install Gradle"
+    },
+    "gradleVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Gradle Version"
+    },
+    "installMaven": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install Maven"
+    },
+    "mavenVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Maven Version"
+    },
+    "sdkmanPath": {
+      "type": "string",
+      "default": "/usr/local/sdkman",
+      "description": "SDKMAN Install Path"
+    },
+    "javaAdditionalVersions": {
+      "type": "string",
+      "default": "",
+      "description": "Additional Java Versions"
+    },
+    "pythonVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Python Version"
+    },
+    "pyenvPath": {
+      "type": "string",
+      "default": "/usr/local/pyenv",
+      "description": "Pyenv Install Path"
+    },
+    "pythonAdditionalVersions": {
+      "type": "string",
+      "default": "",
+      "description": "Additional Python Versions"
+    },
+    "rubyVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Ruby Version"
+    },
+    "rbenvPath": {
+      "type": "string",
+      "default": "/usr/local/rbenv",
+      "description": "Rbenv Install Path"
+    },
+    "rubyAdditionalVersions": {
+      "type": "string",
+      "default": "",
+      "description": "Additional Ruby Versions"
+    },
+    "nodeVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Node.js Version"
+    },
+    "nvmPath": {
+      "type": "string",
+      "default": "/usr/local/nvm",
+      "description": "NVM Install Path"
+    },
+    "nodeAdditionalVersions": {
+      "type": "string",
+      "default": "",
+      "description": "Additional Node.js Versions"
+    },
+    "goVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Go Version"
+    },
+    "goDir": {
+      "type": "string",
+      "default": "/usr/local/go",
+      "description": "Go Install Path"
+    },
+    "goPath": {
+      "type": "string",
+      "default": "/go",
+      "description": "Go Path"
+    },
+    "exercismVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Exercism Version"
+    },
+    "terraformVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Terraform Version"
+    },
+    "newPassword": {
+      "type": "string",
+      "default": "skip",
+      "description": "New Password"
+    },
+    "sshdPort": {
+      "type": "string",
+      "default": "2222",
+      "description": "Sshd Port"
+    },
+    "startSshd": {
+      "type": "string",
+      "default": "false",
+      "description": "Start Sshd"
     }
+  }
 }

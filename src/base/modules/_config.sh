@@ -41,3 +41,7 @@ export GO_VERSION="${GOVERSION:-"latest"}"
 
 export EXERCISM_VERSION="${EXERCISMVERSION:-"latest"}"
 export TERRAFORM_VERSION="${TERRAFORMVERSION:-"latest"}"
+
+export NEW_PASSWORD="${NEWPASSWORD:-"skip"}"
+export SSHD_PORT="${SSHDPORT:-"2222"}"
+export START_SSHD="${STARTSSHD:-"false"}"

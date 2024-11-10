@@ -41,5 +41,9 @@ check "check for terraform" terraform -version
 check "check for gh" gh --version
 check "check for exercism" exercism version
 
+# sshd
+check "check for ssh client" ssh -V
+check "check for ssh server" sshd -V
+
 # Report result
 reportResults

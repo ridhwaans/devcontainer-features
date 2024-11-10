@@ -14,6 +14,8 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' && github.event.inputs.create_release == 'true' }}
     runs-on: ubuntu-24.04
     permissions:
+      contents: write
+      pull-requests: write
       packages: write
 
     steps:
@@ -28,8 +30,21 @@ jobs:
           increment: patch
 
       - name: Update devcontainer-feature.json version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          jq --arg new_version "${{ steps.version.outputs.version }}" '.version = $new_version' src/base/devcontainer-feature.json > src/base/devcontainer-feature.json.tmp && mv src/base/devcontainer-feature.json.tmp src/base/devcontainer-feature.json
+          echo "Start."
+          # Update version in devcontainer-feature.json
+          jq --arg new_version "${{ steps.version.outputs.version }}" '.version = $new_version' \
+          src/base/devcontainer-feature.json > src/base/devcontainer-feature.json.tmp && \
+          mv src/base/devcontainer-feature.json.tmp src/base/devcontainer-feature.json
+          # Configure git and Push updates
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          # Add / update and commit
+          git add src/base/devcontainer-feature.json
+          git commit -m 'Update version'
+          git push origin ${{ github.ref_name }}
 
       - name: Release
         uses: devcontainers/action@v1

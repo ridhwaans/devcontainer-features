@@ -55,6 +55,7 @@ modules=(
   node.sh
   go.sh
   tools.sh
+  sshd.sh
 )
 total=${#modules[@]}
 cur=1
