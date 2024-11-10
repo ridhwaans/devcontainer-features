@@ -1,7 +1,7 @@
 {
   "name": "Base",
   "id": "base",
-  "version": "1.0.0",
+  "version": "2024.11.1",
   "description": "Installs a base environment",
   "options": {
     "username": {
