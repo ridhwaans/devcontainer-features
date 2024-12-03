@@ -9,9 +9,9 @@ macOS
 windows
 - **GET** [Windows Subsystem for Linux (WSL2)](https://learn.microsoft.com/en-us/windows/wsl/install#update-to-wsl-2)  
 - **GET** `Ubuntu 24.04 LTS (Noble Numbat)` from the Microsoft Store
-    - optional: upgrade to the interim release
-    - [managing multiple linux distributions](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#managing-multiple-linux-distributions)   
-
+    - optional: upgrade to the interim release  
+    - [managing multiple linux distributions](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#managing-multiple-linux-distributions)  
+    - append `--remote wsl+Ubuntu` to the VS Code target field in shortcut properties [Open a remote folder or workspace](https://code.visualstudio.com/docs/remote/wsl#_from-the-windows-command-prompt)  
 - **GET** [Docker Desktop](https://www.docker.com/products/docker-desktop/)  
 - **GET** [VS Code Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)  
 
