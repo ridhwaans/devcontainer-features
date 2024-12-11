@@ -45,5 +45,8 @@ check "check for exercism" exercism version
 check "check for ssh client" ssh -V
 check "check for ssh server" sshd -V
 
+# tmux
+check "check for tmux" tmux -V
+
 # Report result
 reportResults

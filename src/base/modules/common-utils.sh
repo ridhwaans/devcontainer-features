@@ -29,6 +29,7 @@ install_mac_packages() {
       bash
       dockutil
       fontconfig
+      fzf
       git
       grep
       jq
@@ -109,6 +110,7 @@ install_debian_packages() {
     ca-certificates
     curl
     fontconfig
+    fzf
     git
     jq
     locales

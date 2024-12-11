@@ -43,7 +43,7 @@ run_brew_command_as_target_user() {
 }
 
 conditional_grep() {
-    # use gnu grep for pcre, not bsd grep
+    # use gnu grep for pcre, else use bsd grep
     if [ "$ADJUSTED_ID" = "mac" ]; then
         ggrep "$@"
     else
@@ -65,23 +65,24 @@ find_version_from_git_tags() {
         local escaped_separator=${separator//./\\.}
         local last_part
         if [ "${last_part_optional}" = "true" ]; then
-            last_part="(${escaped_separator}[0-9]+)?"
+            last_part="(${escaped_separator}[0-9a-zA-Z]+)?"
         else
-            last_part="${escaped_separator}[0-9]+"
+            last_part="${escaped_separator}[0-9a-zA-Z]+"
         fi
-        local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
-        local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
+        local regex="${prefix}\\K[0-9]+(${escaped_separator}[0-9]+)*${last_part}$"
+        local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | grep -v '\^{}' | tr -d ' ' | tr "${separator}" "." | sort -rV)"
+        echo $version_list
         if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
             local latest_version="$(echo "${version_list}" | head -n 1)"
             eval "${variable_name}='${latest_version}'"
         else
             set +e
-            local matching_version="$(echo "${version_list}" | conditional_grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            local matching_version="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
             eval "${variable_name}='${matching_version}'"
             set -e
         fi
     fi
-    if [ -z "${!variable_name}" ] || ! echo "${version_list}" | conditional_grep "^${!variable_name//./\\.}$" > /dev/null 2>&1; then
+    if [ -z "${!variable_name}" ] || ! echo "${version_list}" | grep "^${!variable_name//./\\.}$" > /dev/null 2>&1; then
         echo -e "Invalid ${variable_name} value: ${requested_version}\nValid values:\n${version_list}" >&2
         exit 1
     fi

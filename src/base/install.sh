@@ -24,7 +24,9 @@ elif [ $(uname) = Linux ]; then
   fi
 fi
 
+# load defaults
 source $(dirname $0)/modules/_config.sh
+# load helper functions
 source $(dirname $0)/modules/_helper.sh
 
 # If in automatic mode, determine if a user already exists, if not use vscode
@@ -49,6 +51,7 @@ fi
 
 modules=(
   common-utils.sh
+  tmux.sh
   java.sh
   python.sh
   ruby.sh
