@@ -3,7 +3,8 @@
 updaterc() {
   rc_paths=("vim" "$(eval echo "~$USERNAME")/.vimrc"
           "bash" "$(eval echo "~$USERNAME")/.profile"
-          "zsh" "$(eval echo "~$USERNAME")/.zshrc")
+          "zsh" "$(eval echo "~$USERNAME")/.zshrc"
+          "tmux" "$(eval echo "~$USERNAME")/.tmux.conf")
 
   get_value_by_key() {
     local key="$1"
@@ -65,13 +66,12 @@ find_version_from_git_tags() {
         local escaped_separator=${separator//./\\.}
         local last_part
         if [ "${last_part_optional}" = "true" ]; then
-            last_part="(${escaped_separator}[0-9a-zA-Z]+)?"
+            last_part="(${escaped_separator}[0-9]+)?"
         else
-            last_part="${escaped_separator}[0-9a-zA-Z]+"
+            last_part="${escaped_separator}[0-9]+"
         fi
-        local regex="${prefix}\\K[0-9]+(${escaped_separator}[0-9]+)*${last_part}$"
-        local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | grep -v '\^{}' | tr -d ' ' | tr "${separator}" "." | sort -rV)"
-        echo $version_list
+        local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
+        local version_list="$(git ls-remote --tags ${repository} | conditional_grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
         if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
             local latest_version="$(echo "${version_list}" | head -n 1)"
             eval "${variable_name}='${latest_version}'"
