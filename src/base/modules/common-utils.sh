@@ -285,7 +285,7 @@ EOF
 
 if [ "${UPDATE_RC}" = "true" ]; then
   updaterc "vim" "${vim_rc_snippet}"
-  vim +silent! +PlugInstall +PlugClean +qall
+  sudo -u $USERNAME vim +silent! +PlugInstall +PlugClean +qall
 fi
 
 echo "Done!"
