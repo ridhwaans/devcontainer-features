@@ -47,3 +47,4 @@ export SSHD_PORT="${SSHDPORT:-"2222"}"
 export START_SSHD="${STARTSSHD:-"false"}"
 
 export TMUX_VERSION="${TMUXVERSION:-"latest"}"
+export TMUXPLUG_PATH="${TMUXPLUGPATH:-"/usr/local/share/tmux/bundle"}"

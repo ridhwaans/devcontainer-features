@@ -21,11 +21,8 @@ A devcontainer feature
 | userUid                  | User UID                                          | string  | automatic                       |
 | userGid                  | User GID                                          | string  | automatic                       |
 | updateRc                 | Update RC files                                   | boolean | true                            |
-| vundleDir                | Vundle Install Path                               | string  | /usr/local/share/vim/bundle     |
-| antigenDir               | Antigen Install Path                              | string  | /usr/local/share/zsh/bundle     |
-| vimRcPath                | Path to the vimrc file                            | string  | ~/.vimrc                        |
-| zshRcPath                | Path to the zshrc file                            | string  | ~/.zshrc                        |
-| bashRcPath               | Path to the bashrc file                           | string  | ~/.bashrc                       |
+| vimplugPath              | vim-plug Install Path                             | string  | /usr/local/share/vim/bundle     |
+| zplugPath                | zplug Install Path                                | string  | /usr/local/share/zsh/bundle     |
 | javaVersion              | Java Version                                      | string  | lts                             |
 | installGradle            | Install Gradle                                    | boolean | false                           |
 | gradleVersion            | Gradle Version                                    | string  | latest                          |
@@ -50,5 +47,7 @@ A devcontainer feature
 | newPassword              | New Password                                      | string  | skip                            |
 | sshdPort                 | Sshd Port                                         | string  | 2222                            |
 | startSshd                | Start Sshd                                        | string  | false                           |
+| tmuxVersion              | Tmux version                                      | string  | latest                          |
+| tpmInstallPath           | tpm Install Path                                  | string  | /usr/local/share/tpm/bundle     |
 
 ---

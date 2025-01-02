@@ -47,6 +47,8 @@ check "check for ssh server" sshd -V
 
 # tmux
 check "check for tmux" tmux -V
+TMUXPLUG_PATH="/usr/local/share/tpm/bundle"
+check "check for tpm" ls -1 $TMUXPLUG_PATH/tpm | wc -l
 
 # Report result
 reportResults
