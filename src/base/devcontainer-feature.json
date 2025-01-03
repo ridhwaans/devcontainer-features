@@ -145,11 +145,6 @@
       "default": "/usr/local/go",
       "description": "Go Install Path"
     },
-    "goPath": {
-      "type": "string",
-      "default": "/go",
-      "description": "Go Path"
-    },
     "exercismVersion": {
       "type": "string",
       "default": "latest",
@@ -174,6 +169,16 @@
       "type": "string",
       "default": "false",
       "description": "Start Sshd"
-    }
+    },
+    "tmuxVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Tmux Version"
+    },
+    "tpmPath": {
+      "type": "string",
+      "default": "/usr/local/share/tmux/bundle",
+      "description": "Tmux Plugin Manager Install Path"
+    },
   }
 }

@@ -21,7 +21,7 @@ else
       groupadd -r golang
   fi
   usermod -a -G golang ${USERNAME}
-  mkdir -p "${GO_DIR}" "${GO_PATH}"
+  mkdir -p "${GO_DIR}"
 
   if [[ "${GO_VERSION}" != "none" ]] && [[ "$(go version 2>/dev/null)" != *"${GO_VERSION}"* ]]; then
     echo "Downloading Go ${GO_VERSION}..."
@@ -33,13 +33,13 @@ else
       echo "(!) Go is already installed with version ${GO_VERSION}. Skipping."
   fi
 
-  chown -R "root:golang" "${GO_DIR}" "${GO_PATH}"
-  chmod -R g+rws "${GO_DIR}" "${GO_PATH}"
+  chown -R "root:golang" "${GO_DIR}"
+  chmod -R g+rws "${GO_DIR}"
 fi
 
 go_rc_snippet=$(cat << EOF
-export PATH="$GO_DIR/bin:\$PATH"
-export GOPATH="$GO_PATH"
+export GO_DIR="${GO_DIR}"
+export PATH="\$GO_DIR/bin:\$PATH"
 EOF
 )
 

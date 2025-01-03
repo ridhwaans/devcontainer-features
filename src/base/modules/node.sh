@@ -93,7 +93,7 @@ fi
 
 bun_rc_snippet=$(cat <<EOF
 export BUN_INSTALL="${BUN_INSTALL}"
-export PATH="$BUN_INSTALL/bin:\$PATH"
+export PATH="\$BUN_INSTALL/bin:\$PATH"
 EOF
 )
 

@@ -41,13 +41,12 @@ A devcontainer feature
 | nodeAdditionalVersions   | Additional Node.js Versions                       | string  | "" (empty string)               |
 | goVersion                | Go Version                                        | string  | latest                          |
 | goDir                    | Go Install Path                                   | string  | /usr/local/go                   |
-| goPath                   | Go Path                                           | string  | /go                             |
 | exercismVersion          | Exercism Version                                  | string  | latest                          |
 | terraformVersion         | Terraform Version                                 | string  | latest                          |
 | newPassword              | New Password                                      | string  | skip                            |
 | sshdPort                 | Sshd Port                                         | string  | 2222                            |
 | startSshd                | Start Sshd                                        | string  | false                           |
 | tmuxVersion              | Tmux version                                      | string  | latest                          |
-| tpmInstallPath           | tpm Install Path                                  | string  | /usr/local/share/tpm/bundle     |
+| tpmPath                  | tpm Install Path                                  | string  | /usr/local/share/tpm/bundle     |
 
 ---

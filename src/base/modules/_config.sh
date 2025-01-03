@@ -36,7 +36,6 @@ export NODE_VERSION="${NODEVERSION:-"latest"}"
 export NODE_ADDITIONAL_VERSIONS="${NODEADDITIONALVERSIONS:-""}"
 export BUN_PATH="${BUNPATH:-"/usr/local/bun"}"
 
-export GO_PATH="${GOPATH:-"/go"}"
 export GO_VERSION="${GOVERSION:-"latest"}"
 
 export EXERCISM_VERSION="${EXERCISMVERSION:-"latest"}"
@@ -47,4 +46,4 @@ export SSHD_PORT="${SSHDPORT:-"2222"}"
 export START_SSHD="${STARTSSHD:-"false"}"
 
 export TMUX_VERSION="${TMUXVERSION:-"latest"}"
-export TMUXPLUG_PATH="${TMUXPLUGPATH:-"/usr/local/share/tmux/bundle"}"
+export TPM_PATH="${TPMPATH:-"/usr/local/share/tmux/bundle"}"

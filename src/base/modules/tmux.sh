@@ -57,15 +57,15 @@ else
 fi
 
 echo "Installing system-wide plugin manager for tmux..."
-[ ! -d ${TMUXPLUG_PATH} ] && git clone https://github.com/tmux-plugins/tpm ${TMUXPLUG_PATH}
+[ ! -d ${TPM_PATH} ] && git clone https://github.com/tmux-plugins/tpm ${TPM_PATH}
 if [ "$ADJUSTED_ID" != "mac" ]; then
   # Create group
   if ! cat /etc/group | grep -e "^tpm:" > /dev/null 2>&1; then
       groupadd -r tpm
   fi
   usermod -a -G tpm ${USERNAME}
-  chown -R "root:tpm" "$(dirname $TMUXPLUG_PATH)"
-  chmod -R 775 "$(dirname $TMUXPLUG_PATH)"
+  chown -R "root:tpm" "$(dirname $TPM_PATH)"
+  chmod -R 775 "$(dirname $TPM_PATH)"
 fi
 
 tmux_conf_snippet=$(cat << EOF
@@ -77,7 +77,7 @@ set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
-run-shell "$TMUXPLUG_PATH/tpm"
+run-shell "$TPM_PATH/tpm"
 EOF
 )
 
