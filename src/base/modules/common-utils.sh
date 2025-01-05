@@ -32,6 +32,7 @@ install_mac_packages() {
       fzf
       git
       grep
+      gnu-sed
       jq
       neofetch
       tig

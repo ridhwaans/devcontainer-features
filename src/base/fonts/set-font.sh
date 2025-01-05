@@ -66,8 +66,10 @@ set_font() {
     # Extract the base name (without the extension)
     base_name="${file%.*}"
     echo "$VSCODE_SETTINGS_DIR"/settings.json
-    sed -i "s/\"editor.fontFamily\": \".*\"/\"editor.fontFamily\": \"$base_name\"/g" "$VSCODE_SETTINGS_DIR"/settings.json
-    sed -i "s/\"terminal.integrated.fontFamily\": \".*\"/\"terminal.integrated.fontFamily\": \"$base_name\"/g" "$VSCODE_SETTINGS_DIR"/settings.json
+    echo $base_name
+    # use GNU sed -i for in-place editing and no backup requirement
+    gsed -i "s/\"editor.fontFamily\": \".*\"/\"editor.fontFamily\": \"$base_name\"/g" "$VSCODE_SETTINGS_DIR"/settings.json
+    gsed -i "s/\"terminal.integrated.fontFamily\": \".*\"/\"terminal.integrated.fontFamily\": \"$base_name\"/g" "$VSCODE_SETTINGS_DIR"/settings.json
   fi
 
   if [ $(uname) = Darwin ]; then
