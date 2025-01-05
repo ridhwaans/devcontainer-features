@@ -12,6 +12,12 @@ start_time=$(date +%s)
 if [ $(uname) = Darwin ]; then
   export ADJUSTED_ID="mac"
 elif [ $(uname) = Linux ]; then
+
+  if [ ! -f /etc/os-release ]; then
+    echo "/etc/os-release file not found."
+    exit 1
+  fi
+
   # Bring in ID, ID_LIKE, VERSION_ID, VERSION_CODENAME
   . /etc/os-release
 
